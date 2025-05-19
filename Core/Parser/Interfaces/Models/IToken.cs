@@ -1,6 +1,6 @@
-using Converter.Core.Parser.Tokens;
+using Core.Parser.Tokens;
 
-namespace Converter.Core.Parser.Interfaces;
+namespace Core.Parser.Interfaces.Models;
 
 public interface IToken
 {

@@ -1,4 +1,4 @@
-namespace Converter.Core.Parser.Tokens;
+namespace Core.Parser.Tokens;
 
 public enum TokenType
 {
