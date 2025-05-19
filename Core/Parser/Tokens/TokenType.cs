@@ -4,5 +4,8 @@ public enum TokenType
 {
     Eof, // End of file
     Integer,
-    Plus
+    Plus,
+    Minus,
+    Multiply,
+    Divide,
 }
