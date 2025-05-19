@@ -17,18 +17,18 @@ public interface IStringParser
     /// <summary>
     /// This method is responsible for breaking a sentence apart into tokens. One token at a time.
     /// </summary>
-    /// <returns></returns>
+    /// <returns> Next token </returns>
     IToken GetNextToken();
 
     /// <summary>
     /// Compare the current token type with the passed token type 
-    /// If they match then "eat" the current token and assign the next token to the current one, otherwise raise an exception.
+    /// If they match then "eat" the current token and assign the next token to the current one.
     /// </summary>
     /// <param name="tokenType"> Current token type </param>
     void EatToken(TokenType tokenType);
 
     /// <summary>
-    /// Get the iterpreted into tokens expression
+    /// Get the parsed token expression
     /// </summary>
     /// <returns> Tokenized expression </returns>
     IToken[] GetTokenizedExpression();
