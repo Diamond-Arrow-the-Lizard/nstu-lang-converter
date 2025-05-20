@@ -6,16 +6,8 @@ namespace Core.Parser.Models;
 /// <summary>
 /// Model of pseudo language token and its human-readable representation
 /// </summary>
-public class Token: IToken
+public class Token(TokenType tokenType, string representation) : IToken
 {
-    public TokenType TokenType { get; private set; } = TokenType.Eof;
-    public string Representation { get; private set; } = "";
-
-
-    public Token(TokenType tokenType, string representation)
-    {
-        TokenType = tokenType;
-        Representation = representation;
-    }
-
+    public TokenType TokenType { get; private set; } = tokenType;
+    public string Representation { get; private set; } = representation;
 }

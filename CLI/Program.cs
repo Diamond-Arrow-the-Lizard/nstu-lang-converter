@@ -1,4 +1,6 @@
 ﻿
+using Core.Parser.Handlers.TokenHandlers;
+using Core.Parser.Interfaces.Handlers;
 using Core.Parser.Interfaces.Models;
 using Core.Parser.Interfaces.Repositories;
 using Core.Parser.Interfaces.Services;
@@ -14,9 +16,16 @@ public static class CLI
 {
     public static void Main()
     {
+        List<ITokenHandler> handlers =
+        [
+            new IntegerTokenHandler(),
+            new KeywordTokenHandler(),
+            new OperationTokenHandler(),
+            new StringTokenHandler(),
+        ];
         TokenService tokenService = new();
         TokenRepository tokenRepository = new(tokenService);
-        StringParser parser = new(tokenRepository);
+        StringParser parser = new(tokenRepository, handlers);
 
         string textToParse = "1 + 1 нц кц если 1 + 1 == 2 то кесли \"Hello, World\";".TrimEnd();
 

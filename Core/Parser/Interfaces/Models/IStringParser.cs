@@ -19,7 +19,7 @@ public interface IStringParser
     /// If they match then "eat" the current token and assign the next token to the current one.
     /// </summary>
     /// <param name="tokenType"> Current token type </param>
-    void EatToken(TokenType tokenType);
+    // void EatToken(TokenType tokenType);
 
     /// <summary>
     /// Create tokenized expression

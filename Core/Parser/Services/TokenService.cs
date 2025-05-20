@@ -11,8 +11,6 @@ public class TokenService : ITokenService
     public IToken CreateToken(TokenType tokenType, string representation) => new Token(tokenType, representation);
 
     /// <inheritdoc/>
-    public void ChangeToken(IToken token, TokenType tokenType, string representation) 
-    {
-        token = CreateToken(tokenType, representation);
-    }
+    public IToken ChangeToken(TokenType tokenType, string representation) => CreateToken(tokenType, representation);
+    
 }

@@ -12,5 +12,5 @@ public interface ITokenService
     /// <param name="representation"></param>
     /// <returns> Created token </returns>
     IToken CreateToken(TokenType tokenType, string representation);
-    void ChangeToken(IToken token, TokenType tokenType, string representation);
+    IToken ChangeToken(TokenType tokenType, string representation);
 }

@@ -5,21 +5,16 @@ using Core.Parser.Tokens;
 
 namespace Core.Parser.Repositories;
 
-public class TokenRepository : ITokenRepository
+/// <inheritdoc/>
+public class TokenRepository(ITokenService tokenService) : ITokenRepository
 {
-    private readonly ITokenService _tokenService;
+    private readonly ITokenService _tokenService = tokenService;
     private readonly List<IToken> _tokens = [];
 
     /// <inheritdoc/>
     public List<IToken> GetAllTokens()
     {
         return _tokens;
-    } 
-
-    /// <inheritdoc/>
-    public TokenRepository(ITokenService tokenService)
-    {
-        _tokenService = tokenService;
     }
 
     /// <inheritdoc/>

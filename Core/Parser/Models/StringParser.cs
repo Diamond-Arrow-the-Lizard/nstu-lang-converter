@@ -4,70 +4,66 @@ using Core.Parser.Interfaces.Repositories;
 using Core.Parser.Interfaces.Services;
 using Core.Parser.Tokens;
 using Core.Parser.Keywords;
+using Core.Parser.Interfaces.Handlers;
+using System.Text.RegularExpressions;
 
 namespace Core.Parser.Models;
 
 /// <summary>
 /// Turns text into tokens for an interpreter to understand
 /// </summary>
-public class StringParser : IStringParser
+public class StringParser(ITokenRepository tokenRepository, IEnumerable<ITokenHandler> tokenHandlers) : IStringParser
 {
     private string _text = "";
-    private readonly List<string> _operations = ["+", "-", "/", "*", "=", "=="];
-    private readonly ITokenRepository _tokenRepository;
-    private readonly ReservedKeywords _keywords = new();
-    private string[] SplitText => _text.Split(' ');
-    public StringParser(ITokenRepository tokenRepository) 
-    {
-        _tokenRepository = tokenRepository;
-    }
+    private readonly ITokenRepository _tokenRepository = tokenRepository;
+    private readonly List<ITokenHandler> _tokenHandlers = tokenHandlers.ToList();
 
-    /// <inheritdoc/>
     public void SetText(string text) => _text = text;
 
-    /// <inheritdoc/>
-    public void EatToken(TokenType tokenType)
-    {
-        throw new NotImplementedException(nameof(EatToken));
-    }
-
-    /// <inheritdoc/>
     public void MakeTokenizedExpression()
     {
-        foreach(var word in SplitText)
+        foreach (var token in SplitIntoTokens())
         {
-            Console.WriteLine($"Parsing {word}");
+            Console.WriteLine($"Parsing {token}");
 
-            if (int.TryParse(word, out int i)) _tokenRepository.AddToken(TokenType.Integer, word);
-            else if(_operations.Contains(word)) _tokenRepository.AddToken(TokenType.Operation, word);
-            else if (word.Contains('"')) _tokenRepository.AddToken(TokenType.String, word);
-            else if(_keywords.List.Contains(word)) _tokenRepository.AddToken(TokenType.Keyword, word);
-            else throw new InvalidDataException($"Cannot parse {word}");
-
-            if(word.EndsWith(';')) 
+            bool handled = false;
+            foreach (var handler in _tokenHandlers)
             {
-                Console.WriteLine("EOF found");
-                _tokenRepository.AddToken(TokenType.Eof, Convert.ToString(word.Last()));
+                if (handler.CanHandle(token))
+                {
+                    handler.Handle(token, _tokenRepository);
+                    handled = true;
+                    break;
+                }
             }
 
-            Console.WriteLine($"{word} Parsed");
+            // Handle EOF (semicolon) as a separate token
+            if (!handled && token == ";")
+            {
+                _tokenRepository.AddToken(TokenType.Eof, ";");
+                Console.WriteLine("EOF found");
+                handled = true;
+            }
+
+            if (!handled)
+                throw new InvalidDataException($"Cannot parse '{token}'");
+
+            Console.WriteLine($"{token} Parsed");
         }
-        Console.WriteLine("Cleaning EOF from the last token");
-        CleanEofToken();
+
     }
 
     /// <summary>
-    /// Cleans up EOF sign from the last token's representation 
+    /// Properly format text into tokens (i.e. to not fail at parsing "Hello, world" since it's space-separated)
     /// </summary>
-    private void CleanEofToken()
+    /// <returns> String valid for parsing </returns>
+    private IEnumerable<string> SplitIntoTokens()
     {
-        var tokens = _tokenRepository.GetAllTokens();
-        foreach(var token in tokens)
+        // Split on spaces, but preserve quoted strings as single tokens
+        var regex = new Regex(@"("".*?""|\S+)");
+        foreach (Match match in regex.Matches(_text))
         {
-            if(token.TokenType != TokenType.Eof && token.Representation.Contains(';'))
-            {
-                _ = token.Representation.Replace(";", "");
-            }
+            yield return match.Value.Trim(); // Trim to handle trailing spaces
         }
     }
 }
