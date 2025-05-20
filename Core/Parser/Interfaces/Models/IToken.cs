@@ -9,4 +9,5 @@ public interface IToken
 {
     TokenType TokenType { get; }
     string Representation { get; }
+
 }
