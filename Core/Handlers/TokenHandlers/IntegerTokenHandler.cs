@@ -9,9 +9,7 @@ namespace Core.Parser.Handlers.TokenHandlers;
 /// </summary>
 public class IntegerTokenHandler : ITokenHandler
 {
-    /// <inheritdoc/>
     public bool CanHandle(string word) => int.TryParse(word, out _);
 
-    /// <inheritdoc/>
     public void Handle(string word, ITokenRepository repo) => repo.AddToken(TokenType.Integer, word);
 }

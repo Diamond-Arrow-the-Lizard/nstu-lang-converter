@@ -22,10 +22,8 @@ public class OperationTokenHandler : ITokenHandler
         "==",
     ];
 
-    /// <inheritdoc/>
     public bool CanHandle(string word) => _operations.Contains(word);
 
-    /// <inheritdoc/>
     public void Handle(string word, ITokenRepository repo) => repo.AddToken(TokenType.Operation, word);
 
 }

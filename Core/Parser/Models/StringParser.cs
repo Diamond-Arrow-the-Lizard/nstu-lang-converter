@@ -37,7 +37,6 @@ public class StringParser(ITokenRepository tokenRepository, IEnumerable<ITokenHa
                 }
             }
 
-            // Handle EOF (semicolon) as a separate token
             if (!handled && token == ";")
             {
                 _tokenRepository.AddToken(TokenType.Eof, ";");
@@ -60,7 +59,7 @@ public class StringParser(ITokenRepository tokenRepository, IEnumerable<ITokenHa
     private IEnumerable<string> SplitIntoTokens()
     {
         // Split on spaces, but preserve quoted strings as single tokens
-        var regex = new Regex(@"("".*?""|\S+)");
+        var regex = new Regex(@"("".*?""|\S+)"); // Regex magic
         foreach (Match match in regex.Matches(_text))
         {
             yield return match.Value.Trim(); // Trim to handle trailing spaces

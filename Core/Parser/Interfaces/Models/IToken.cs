@@ -7,7 +7,16 @@ namespace Core.Parser.Interfaces.Models;
 /// </summary>
 public interface IToken
 {
+    /// <summary>
+    /// Type of the token
+    /// </summary>
+    /// <value> TokenType </value>
     TokenType TokenType { get; }
+    
+    /// <summary>
+    /// Human-readable representation of the token (what the user sees)
+    /// </summary>
+    /// <value> string </value>
     string Representation { get; }
 
 }
