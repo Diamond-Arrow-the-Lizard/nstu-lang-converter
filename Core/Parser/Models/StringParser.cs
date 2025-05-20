@@ -3,6 +3,7 @@ using Core.Parser.Interfaces.Models;
 using Core.Parser.Interfaces.Repositories;
 using Core.Parser.Interfaces.Services;
 using Core.Parser.Tokens;
+using Core.Parser.Keywords;
 
 namespace Core.Parser.Models;
 
@@ -12,8 +13,9 @@ namespace Core.Parser.Models;
 public class StringParser : IStringParser
 {
     private string _text = "";
-    private readonly List<string> _operations = ["+", "-", "/", "*"];
+    private readonly List<string> _operations = ["+", "-", "/", "*", "=", "=="];
     private readonly ITokenRepository _tokenRepository;
+    private readonly ReservedKeywords _keywords = new();
     private string[] SplitText => _text.Split(' ');
     public StringParser(ITokenRepository tokenRepository) 
     {
@@ -39,6 +41,7 @@ public class StringParser : IStringParser
             if (int.TryParse(word, out int i)) _tokenRepository.AddToken(TokenType.Integer, word);
             else if(_operations.Contains(word)) _tokenRepository.AddToken(TokenType.Operation, word);
             else if (word.Contains('"')) _tokenRepository.AddToken(TokenType.String, word);
+            else if(_keywords.List.Contains(word)) _tokenRepository.AddToken(TokenType.Keyword, word);
             else throw new InvalidDataException($"Cannot parse {word}");
 
             if(word.EndsWith(';')) 

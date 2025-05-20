@@ -14,11 +14,11 @@ public static class CLI
 {
     public static void Main()
     {
-        ITokenService tokenService = new TokenService();
-        ITokenRepository tokenRepository = new TokenRepository(tokenService);
-        IStringParser parser = new StringParser(tokenRepository);
+        TokenService tokenService = new();
+        TokenRepository tokenRepository = new(tokenService);
+        StringParser parser = new(tokenRepository);
 
-        string textToParse = "1 + 1 \"Hello, World\";".TrimEnd();
+        string textToParse = "1 + 1 нц кц если 1 + 1 == 2 то кесли \"Hello, World\";".TrimEnd();
 
         Console.WriteLine("Text to parse:");
         foreach(var i in textToParse)

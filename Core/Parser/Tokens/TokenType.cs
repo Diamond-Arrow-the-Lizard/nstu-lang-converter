@@ -9,4 +9,5 @@ public enum TokenType
     Integer,
     String,
     Operation,
+    Keyword,
 }
