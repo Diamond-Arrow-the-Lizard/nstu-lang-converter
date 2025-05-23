@@ -23,16 +23,19 @@ public class StringParser(ITokenRepository tokenRepository, IEnumerable<ITextToT
     {
         foreach (var token in SplitIntoTokens())
         {
-            Console.WriteLine($"Parsing {token}");
+            //Console.WriteLine($"Parsing {token}");
 
             bool handled = TryTokenize(token);
 
             if (!handled && token.Contains(';'))
             {
-                Console.WriteLine("EOF found");
+                //Console.WriteLine("EOF found");
+
                 string noEofToken = token.Remove(token.IndexOf(';'));
                 handled = TryTokenize(noEofToken);
-                Console.WriteLine("Pre EOF text tokenized");
+
+                //Console.WriteLine("Pre EOF text tokenized");
+
                 _tokenRepository.AddToken(TokenType.Eof, ";");
                 handled = true;
             }
@@ -40,7 +43,7 @@ public class StringParser(ITokenRepository tokenRepository, IEnumerable<ITextToT
             if (!handled)
                 throw new InvalidDataException($"Cannot parse '{token}'");
 
-            Console.WriteLine($"{token} Parsed");
+            //Console.WriteLine($"{token} Parsed");
         }
 
     }
