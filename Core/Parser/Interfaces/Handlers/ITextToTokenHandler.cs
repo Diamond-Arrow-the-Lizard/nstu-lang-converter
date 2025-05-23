@@ -5,7 +5,7 @@ namespace Core.Parser.Interfaces.Handlers;
 /// <summary>
 /// Interface for handling text tokenization
 /// </summary>
-public interface ITokenHandler
+public interface ITextToTokenHandler
 {
     /// <summary>
     /// Check if the handler can handle the given word

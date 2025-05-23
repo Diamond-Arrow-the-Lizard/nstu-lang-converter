@@ -1,5 +1,5 @@
 ﻿
-using Core.Parser.Handlers.TokenHandlers;
+using Core.Parser.Handlers.TextToTokenHandlers;
 using Core.Parser.Interfaces.Handlers;
 using Core.Parser.Interfaces.Models;
 using Core.Parser.Interfaces.Repositories;
@@ -16,12 +16,12 @@ public static class CLI
 {
     public static void Main()
     {
-        List<ITokenHandler> handlers =
+        List<ITextToTokenHandler> handlers =
         [
-            new IntegerTokenHandler(),
-            new KeywordTokenHandler(),
-            new OperationTokenHandler(),
-            new StringTokenHandler(),
+            new IntegerTextToTokenHandler(),
+            new KeywordTextToTokenHandler(),
+            new OperationTextToTokenHandler(),
+            new StringTextToTokenHandler(),
         ];
         TokenService tokenService = new();
         TokenRepository tokenRepository = new(tokenService);

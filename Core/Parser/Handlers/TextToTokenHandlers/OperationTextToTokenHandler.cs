@@ -2,12 +2,12 @@ using Core.Parser.Interfaces.Handlers;
 using Core.Parser.Interfaces.Repositories;
 using Core.Parser.Tokens;
 
-namespace Core.Parser.Handlers.TokenHandlers;
+namespace Core.Parser.Handlers.TextToTokenHandlers;
 
 /// <summary>
 /// Handles Operation (multiplication, division, etc.) tokenization
 /// </summary>
-public class OperationTokenHandler : ITokenHandler
+public class OperationTextToTokenHandler : ITextToTokenHandler
 {
     /// <summary>
     /// List of valid operations

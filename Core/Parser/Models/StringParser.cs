@@ -12,11 +12,11 @@ namespace Core.Parser.Models;
 /// <summary>
 /// Turns text into tokens for an interpreter to understand
 /// </summary>
-public class StringParser(ITokenRepository tokenRepository, IEnumerable<ITokenHandler> tokenHandlers) : IStringParser
+public class StringParser(ITokenRepository tokenRepository, IEnumerable<ITextToTokenHandler> TextToTokenHandlers) : IStringParser
 {
     private string _text = "";
     private readonly ITokenRepository _tokenRepository = tokenRepository;
-    private readonly List<ITokenHandler> _tokenHandlers = tokenHandlers.ToList();
+    private readonly List<ITextToTokenHandler> _TextToTokenHandlers = TextToTokenHandlers.ToList();
 
     public void SetText(string text) => _text = text;
 
@@ -27,7 +27,7 @@ public class StringParser(ITokenRepository tokenRepository, IEnumerable<ITokenHa
             Console.WriteLine($"Parsing {token}");
 
             bool handled = false;
-            foreach (var handler in _tokenHandlers)
+            foreach (var handler in _TextToTokenHandlers)
             {
                 if (handler.CanHandle(token))
                 {

@@ -2,12 +2,12 @@ using Core.Parser.Interfaces.Handlers;
 using Core.Parser.Interfaces.Repositories;
 using Core.Parser.Tokens;
 
-namespace Core.Parser.Handlers.TokenHandlers;
+namespace Core.Parser.Handlers.TextToTokenHandlers;
 
 /// <summary>
 /// Tokenizes integer values
 /// </summary>
-public class IntegerTokenHandler : ITokenHandler
+public class IntegerTextToTokenHandler : ITextToTokenHandler
 {
     public bool CanHandle(string word) => int.TryParse(word, out _);
 

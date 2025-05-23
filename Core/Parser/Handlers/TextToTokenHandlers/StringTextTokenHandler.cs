@@ -2,12 +2,12 @@ using Core.Parser.Interfaces.Handlers;
 using Core.Parser.Interfaces.Repositories;
 using Core.Parser.Tokens;
 
-namespace Core.Parser.Handlers.TokenHandlers;
+namespace Core.Parser.Handlers.TextToTokenHandlers;
 
 /// <summary>
 /// Handles string tokenization
 /// </summary>
-public class StringTokenHandler : ITokenHandler
+public class StringTextToTokenHandler : ITextToTokenHandler
 {
     public bool CanHandle(string word) => word.StartsWith('"') && word.EndsWith('"');
     public void Handle(string word, ITokenRepository repo) => repo.AddToken(TokenType.String, word);
