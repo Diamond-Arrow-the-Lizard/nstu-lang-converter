@@ -23,32 +23,44 @@ public class StringParser(ITokenRepository tokenRepository, IEnumerable<ITextToT
     {
         foreach (var token in SplitIntoTokens())
         {
-            //Console.WriteLine($"Parsing {token}");
+            Console.WriteLine($"Parsing {token}");
 
-            bool handled = false;
-            foreach (var handler in _TextToTokenHandlers)
-            {
-                if (handler.CanHandle(token))
-                {
-                    handler.Handle(token, _tokenRepository);
-                    handled = true;
-                    break;
-                }
-            }
+            bool handled = TryTokenize(token);
 
-            if (!handled && token == ";")
+            if (!handled && token.Contains(';'))
             {
+                Console.WriteLine("EOF found");
+                string noEofToken = token.Remove(token.IndexOf(';'));
+                handled = TryTokenize(noEofToken);
+                Console.WriteLine("Pre EOF text tokenized");
                 _tokenRepository.AddToken(TokenType.Eof, ";");
-                //Console.WriteLine("EOF found");
                 handled = true;
             }
 
             if (!handled)
                 throw new InvalidDataException($"Cannot parse '{token}'");
 
-            //Console.WriteLine($"{token} Parsed");
+            Console.WriteLine($"{token} Parsed");
         }
 
+    }
+
+    /// <summary>
+    /// Tokenizes an expression if possible
+    /// </summary>
+    /// <param name="token"> Text to tokenize </param>
+    /// <returns> true if successfully hancled </returns>
+    private bool TryTokenize(string token)
+    {
+        foreach (var handler in _TextToTokenHandlers)
+        {
+            if (handler.CanHandle(token))
+            {
+                handler.Handle(token, _tokenRepository);
+                return true;
+            }
+        }
+        return false;
     }
 
     /// <summary>
@@ -64,4 +76,5 @@ public class StringParser(ITokenRepository tokenRepository, IEnumerable<ITextToT
             yield return match.Value.Trim(); // Trim to handle trailing spaces
         }
     }
+
 }

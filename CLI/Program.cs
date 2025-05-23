@@ -11,6 +11,7 @@ using Core.Parser.Repositories;
 using Core.Parser.Services;
 using Core.Parser.Tokens;
 using System;
+using System.Net.Http.Headers;
 
 namespace CLI;
 
@@ -28,6 +29,7 @@ public static class CLI
             new DecrementOperationTextToTokenHandler(),
             new DivideOperationTextToTokenHandler(),
             new EqualsOperationTextToTokenHandler(),
+            new ReturnKeywordTextToTokenHandler(),
             new MultiplyOperationTextToTokenHandler(),
 
             new ControlBeginKeywordTextToTokenHandler(),
@@ -45,7 +47,7 @@ public static class CLI
         TokenRepository tokenRepository = new(tokenService);
         StringParser parser = new(tokenRepository, handlers);
 
-        string textToParse = "1 + 1 нц 5 раз кц если 1 + 1 == 2 то написать \"Афифметика верная\"; кесли \"Hello, World\";".TrimEnd();
+        string textToParse = "1 + 1 нц 5 раз кц если 1 + 1 == 2 то написать \"Афифметика верная\"; кесли иначе написать \"Hello, World\"; кесли вернуть 0;".TrimEnd();
 
         Console.WriteLine("Text to parse:");
         foreach(var i in textToParse)

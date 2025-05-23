@@ -15,7 +15,7 @@ public interface IStringParser
     void SetText(string text);
 
     /// <summary>
-    /// Create tokenized expression
+    /// Creates tokenized expression
     /// </summary>
     void MakeTokenizedExpression();
 }
