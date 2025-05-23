@@ -5,9 +5,17 @@ namespace Core.Parser.Tokens;
 /// </summary>
 public enum TokenType
 {
-    Eof, // End of file
-    Integer,
+    Eof, // End of file, a.k.a. ';'
+    Integer, 
     String,
-    Operation,
-    Keyword,
+    Operation, // a.k.a. +, -, /, *, =, ==
+    ControlBegin, // a.k.a. '{'
+    ControlEnd, // a.k.a. '}'
+    If,
+    Else,
+    LoopTimes, // int i = how many times
+    Return,
+    Write,
+    Read,
+    Keyword, // TODO remove this
 }
