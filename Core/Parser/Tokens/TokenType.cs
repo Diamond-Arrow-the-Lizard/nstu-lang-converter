@@ -8,7 +8,12 @@ public enum TokenType
     Eof, // End of file, a.k.a. ';'
     Integer, 
     String,
-    Operation, // a.k.a. +, -, /, *, =, ==
+    Add, // +
+    Decrement, // -
+    Multiply, // *
+    Divide, // /
+    Assign, // =
+    Equals, // ==
     ControlBegin, // a.k.a. '{'
     ControlEnd, // a.k.a. '}'
     If,

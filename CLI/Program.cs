@@ -1,6 +1,7 @@
 ﻿
 using Core.Parser.Handlers.TextToTokenHandlers;
 using Core.Parser.Handlers.TextToTokenHandlers.KeywordTextToTokenHandlers;
+using Core.Parser.Handlers.TextToTokenHandlers.OperationTextToTokenHandlers;
 using Core.Parser.Interfaces.Handlers;
 using Core.Parser.Interfaces.Models;
 using Core.Parser.Interfaces.Repositories;
@@ -20,7 +21,12 @@ public static class CLI
         List<ITextToTokenHandler> handlers =
         [
             new IntegerTextToTokenHandler(),
-            new OperationTextToTokenHandler(),
+            new AddOperationTextToTokenHandler(),
+            new AssignOperationTextToTokenHandler(),
+            new DecrementOperationTextToTokenHandler(),
+            new DivideOperationTextToTokenHandler(),
+            new EqualsOperationTextToTokenHandler(),
+            new MultiplyOperationTextToTokenHandler(),
             new StringTextToTokenHandler(),
             new ControlBeginKeywordTextToTokenHandler(),
             new ControlEndKeywordTextToTokenHandler(),
