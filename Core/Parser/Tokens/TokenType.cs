@@ -13,9 +13,9 @@ public enum TokenType
     ControlEnd, // a.k.a. '}'
     If,
     Else,
-    LoopTimes, // int i = how many times
+    LoopBegin, 
+    LoopEnd,
     Return,
     Write,
     Read,
-    Keyword, // TODO remove this
 }

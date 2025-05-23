@@ -1,5 +1,6 @@
 ﻿
 using Core.Parser.Handlers.TextToTokenHandlers;
+using Core.Parser.Handlers.TextToTokenHandlers.KeywordTextToTokenHandlers;
 using Core.Parser.Interfaces.Handlers;
 using Core.Parser.Interfaces.Models;
 using Core.Parser.Interfaces.Repositories;
@@ -19,15 +20,22 @@ public static class CLI
         List<ITextToTokenHandler> handlers =
         [
             new IntegerTextToTokenHandler(),
-            new KeywordTextToTokenHandler(),
             new OperationTextToTokenHandler(),
             new StringTextToTokenHandler(),
+            new ControlBeginKeywordTextToTokenHandler(),
+            new ControlEndKeywordTextToTokenHandler(),
+            new IfKeywordTextToTokenHandler(),
+            new ElseKeywordTextToTokenHandler(),
+            new LoopBeginKeywordTextToTokenHandler(),
+            new LoopEndKeywordTextToTokenHandler(),
+            new ReadKeywordTextToTokenHandler(),
+            new WriteKeywordTextToTokenHandler(),
         ];
         TokenService tokenService = new();
         TokenRepository tokenRepository = new(tokenService);
         StringParser parser = new(tokenRepository, handlers);
 
-        string textToParse = "1 + 1 нц кц если 1 + 1 == 2 то кесли \"Hello, World\";".TrimEnd();
+        string textToParse = "1 + 1 нц 5 раз кц если 1 + 1 == 2 то написать \"Афифметика верная\"; кесли \"Hello, World\";".TrimEnd();
 
         Console.WriteLine("Text to parse:");
         foreach(var i in textToParse)
