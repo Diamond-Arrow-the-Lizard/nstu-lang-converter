@@ -27,6 +27,7 @@ public static class CLI
             new IfKeywordTextToTokenHandler(),
             new ElseKeywordTextToTokenHandler(),
             new LoopBeginKeywordTextToTokenHandler(),
+            new LoopTimesKeywordTextToTokenHandler(),
             new LoopEndKeywordTextToTokenHandler(),
             new ReadKeywordTextToTokenHandler(),
             new WriteKeywordTextToTokenHandler(),

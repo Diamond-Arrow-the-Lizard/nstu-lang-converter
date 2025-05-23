@@ -14,6 +14,7 @@ public enum TokenType
     If,
     Else,
     LoopBegin, 
+    LoopTimes,
     LoopEnd,
     Return,
     Write,
