@@ -21,13 +21,15 @@ public static class CLI
         List<ITextToTokenHandler> handlers =
         [
             new IntegerTextToTokenHandler(),
+            new StringTextToTokenHandler(),
+
             new AddOperationTextToTokenHandler(),
             new AssignOperationTextToTokenHandler(),
             new DecrementOperationTextToTokenHandler(),
             new DivideOperationTextToTokenHandler(),
             new EqualsOperationTextToTokenHandler(),
             new MultiplyOperationTextToTokenHandler(),
-            new StringTextToTokenHandler(),
+
             new ControlBeginKeywordTextToTokenHandler(),
             new ControlEndKeywordTextToTokenHandler(),
             new IfKeywordTextToTokenHandler(),
@@ -37,6 +39,7 @@ public static class CLI
             new LoopEndKeywordTextToTokenHandler(),
             new ReadKeywordTextToTokenHandler(),
             new WriteKeywordTextToTokenHandler(),
+
         ];
         TokenService tokenService = new();
         TokenRepository tokenRepository = new(tokenService);
