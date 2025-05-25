@@ -18,27 +18,23 @@ public class TokenRepository(ITokenService tokenService) : ITokenRepository
     }
 
     /// <inheritdoc/>
-    public IToken GetTokenByRepresentation(string representation)
-    {
-        throw new NotImplementedException(nameof(GetTokenByRepresentation));
-    }
+    public IToken GetTokenByRepresentation(string representation) => _tokens.First(item => item.Representation == representation);
 
     /// <inheritdoc/>
-    public IToken GetTokenByType(TokenType tokenType)
-    {
-        throw new NotImplementedException(nameof(GetTokenByType));
-    }
+    public IToken GetTokenByType(TokenType tokenType) => _tokens.First(item => item.TokenType == tokenType);
 
     /// <inheritdoc/>
     public void RemoveTokenByRepresentation(string representation)
     {
-        throw new NotImplementedException(nameof(RemoveTokenByRepresentation));
+        var removeIndex = _tokens.FindIndex(item => item.Representation == representation);
+        _tokens.RemoveAt(removeIndex);
     }
 
     /// <inheritdoc/>
     public void RemoveTokenByType(TokenType tokenType)
     {
-        throw new NotImplementedException(nameof(RemoveTokenByType));
+        var removeIndex = _tokens.FindIndex(item => item.TokenType == tokenType);
+        _tokens.RemoveAt(removeIndex);
     }
 
     /// <inheritdoc/>
