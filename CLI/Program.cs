@@ -21,6 +21,9 @@ public static class CLI
     {
         List<ITextToTokenHandler> handlers =
         [
+            new ProgramBeginTextToTokenHandler(),
+            new ProgramEndTextToTokenHandler(),
+
             new IntegerTextToTokenHandler(),
             new StringTextToTokenHandler(),
 
@@ -47,7 +50,7 @@ public static class CLI
         TokenRepository tokenRepository = new(tokenService);
         StringParser parser = new(tokenRepository, handlers);
 
-        string textToParse = "1 + 1 нц 5 раз кц если 1 + 1 == 2 то написать \"Афифметика верная\"; кесли иначе написать \"Hello, World\"; кесли вернуть 0;".TrimEnd();
+        string textToParse = "начало 1 + 1 нц 5 раз кц если 1 + 1 == 2 то написать \"Афифметика верная\"; кесли иначе написать \"Hello, World\"; кесли вернуть 0; конец".TrimEnd();
 
         Console.WriteLine("Text to parse:");
         foreach(var i in textToParse)

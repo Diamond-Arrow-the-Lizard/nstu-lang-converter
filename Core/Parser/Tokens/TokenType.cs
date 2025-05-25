@@ -6,6 +6,8 @@ namespace Core.Parser.Tokens;
 public enum TokenType
 {
     Eof, // End of file, a.k.a. ';'
+    ProgramBegin,
+    ProgramEnd,
     Integer, 
     String,
     Add, // +
