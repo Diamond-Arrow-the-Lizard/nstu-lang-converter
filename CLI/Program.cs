@@ -2,16 +2,12 @@
 using Core.Parser.Handlers.TextToTokenHandlers;
 using Core.Parser.Handlers.TextToTokenHandlers.KeywordTextToTokenHandlers;
 using Core.Parser.Handlers.TextToTokenHandlers.OperationTextToTokenHandlers;
+using Core.Parser.Handlers.TextToTokenHandlers.VariableTypeTextToTokenHandlers;
 using Core.Parser.Interfaces.Handlers;
 using Core.Parser.Interfaces.Models;
-using Core.Parser.Interfaces.Repositories;
-using Core.Parser.Interfaces.Services;
 using Core.Parser.Models;
 using Core.Parser.Repositories;
 using Core.Parser.Services;
-using Core.Parser.Tokens;
-using System;
-using System.Net.Http.Headers;
 
 namespace CLI;
 

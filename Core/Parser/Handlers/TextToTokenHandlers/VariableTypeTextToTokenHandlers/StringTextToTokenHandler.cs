@@ -2,7 +2,7 @@ using Core.Parser.Interfaces.Handlers;
 using Core.Parser.Interfaces.Repositories;
 using Core.Parser.Tokens;
 
-namespace Core.Parser.Handlers.TextToTokenHandlers;
+namespace Core.Parser.Handlers.TextToTokenHandlers.VariableTypeTextToTokenHandlers;
 
 /// <summary>
 /// Handles string tokenization

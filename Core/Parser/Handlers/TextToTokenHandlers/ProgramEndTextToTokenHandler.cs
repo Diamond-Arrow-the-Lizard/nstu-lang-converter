@@ -5,7 +5,7 @@ using Core.Parser.Tokens;
 namespace Core.Parser.Handlers.TextToTokenHandlers;
 
 /// <summary>
-/// Handles string tokenization
+/// Handles program beginning tokenization
 /// </summary>
 public class ProgramEndTextToTokenHandler : ITextToTokenHandler
 {
