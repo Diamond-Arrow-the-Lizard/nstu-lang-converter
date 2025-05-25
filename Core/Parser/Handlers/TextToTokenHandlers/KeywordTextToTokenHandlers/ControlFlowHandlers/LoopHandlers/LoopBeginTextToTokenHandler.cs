@@ -2,7 +2,7 @@ using Core.Parser.Interfaces.Handlers;
 using Core.Parser.Interfaces.Repositories;
 using Core.Parser.Tokens;
 
-namespace Core.Parser.Handlers.TextToTokenHandlers.KeywordTextToTokenHandlers;
+namespace Core.Parser.Handlers.TextToTokenHandlers.KeywordTextToTokenHandlers.ControlFlowHandlers.LoopHandlers;
 
 public class LoopBeginKeywordTextToTokenHandler : ITextToTokenHandler
 {

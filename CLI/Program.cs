@@ -1,6 +1,11 @@
 ﻿
+using System.Runtime.CompilerServices;
 using Core.Parser.Handlers.TextToTokenHandlers;
 using Core.Parser.Handlers.TextToTokenHandlers.KeywordTextToTokenHandlers;
+using Core.Parser.Handlers.TextToTokenHandlers.KeywordTextToTokenHandlers.ControlFlowHandlers.IfElseHandlers;
+using Core.Parser.Handlers.TextToTokenHandlers.KeywordTextToTokenHandlers.ControlFlowHandlers.LoopHandlers;
+using Core.Parser.Handlers.TextToTokenHandlers.KeywordTextToTokenHandlers.FunctionHandlers.ReadWriteHandlers;
+using Core.Parser.Handlers.TextToTokenHandlers.KeywordTextToTokenHandlers.VariableTypeNameTextToTokenHandlers;
 using Core.Parser.Handlers.TextToTokenHandlers.OperationTextToTokenHandlers;
 using Core.Parser.Handlers.TextToTokenHandlers.VariableTypeTextToTokenHandlers;
 using Core.Parser.Interfaces.Handlers;
@@ -22,6 +27,11 @@ public static class CLI
 
             new IntegerTextToTokenHandler(),
             new StringTextToTokenHandler(),
+            new DoubleTextToTokenHandler(),
+            
+            new DoubleTypeKeywordTextToTokenHandler(),
+            new StringTypeKeywordTextToTokenHandler(),
+            new IntegerTypeKeywordTextToTokenHandler(),
 
             new AddOperationTextToTokenHandler(),
             new AssignOperationTextToTokenHandler(),
@@ -35,9 +45,11 @@ public static class CLI
             new ControlEndKeywordTextToTokenHandler(),
             new IfKeywordTextToTokenHandler(),
             new ElseKeywordTextToTokenHandler(),
+
             new LoopBeginKeywordTextToTokenHandler(),
             new LoopTimesKeywordTextToTokenHandler(),
             new LoopEndKeywordTextToTokenHandler(),
+
             new ReadKeywordTextToTokenHandler(),
             new WriteKeywordTextToTokenHandler(),
 
@@ -46,7 +58,7 @@ public static class CLI
         TokenRepository tokenRepository = new(tokenService);
         StringParser parser = new(tokenRepository, handlers);
 
-        string textToParse = "начало 1 + 1 нц 5 раз кц если 1 + 1 == 2 то написать \"Афифметика верная\"; кесли иначе написать \"Hello, World\"; кесли вернуть 0; конец".TrimEnd();
+        string textToParse = "начало цел X = 1 + 1 нц 5 раз кц если 1 + 1 == 2 то написать \"Афифметика верная\"; кесли иначе написать \"Hello, World\"; кесли вернуть 0; конец".TrimEnd();
 
         Console.WriteLine("Text to parse:");
         foreach(var i in textToParse)

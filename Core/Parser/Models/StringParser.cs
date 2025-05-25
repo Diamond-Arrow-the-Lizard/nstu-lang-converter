@@ -41,7 +41,9 @@ public class StringParser(ITokenRepository tokenRepository, IEnumerable<ITextToT
             }
 
             if (!handled)
-                throw new InvalidDataException($"Cannot parse '{token}'");
+            {
+                _tokenRepository.AddToken(TokenType.VariableName, token);
+            }
 
             //Console.WriteLine($"{token} Parsed");
         }

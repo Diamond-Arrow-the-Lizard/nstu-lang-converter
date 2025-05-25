@@ -13,7 +13,7 @@ public enum TokenType
     IntegerType,
     DoubleType,
     StringType,
-    VariableName,
+    VariableName, 
 
     Integer, 
     Double,
