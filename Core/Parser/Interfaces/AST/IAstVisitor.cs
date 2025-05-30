@@ -18,4 +18,5 @@ public interface IAstVisitor
     void Visit(VariableReferenceNode node);
     void Visit(WriteStatementNode node);
     void Visit(ReadStatementNode node);
+    void Visit(ReturnNode node);
 }
