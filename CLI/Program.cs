@@ -20,7 +20,7 @@ public static class CLI
 {
     public static void Main()
     {
-        List<ITextToTokenHandler> handlers =
+        List<ITextToTokenHandler> textToTokenHandlers =
         [
             new ProgramBeginTextToTokenHandler(),
             new ProgramEndTextToTokenHandler(),
@@ -56,7 +56,7 @@ public static class CLI
         ];
         TokenService tokenService = new();
         TokenRepository tokenRepository = new(tokenService);
-        StringParser parser = new(tokenRepository, handlers);
+        StringParser parser = new(tokenRepository, textToTokenHandlers);
 
         string textToParse = "начало цел X = 1 + 1 нц 5 раз кц если 1 + 1 == 2 то написать \"Афифметика верная\"; кесли иначе написать \"Hello, World\"; кесли вернуть 0; конец".TrimEnd();
 
