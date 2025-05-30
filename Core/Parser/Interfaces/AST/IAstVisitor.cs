@@ -1,6 +1,7 @@
 using Core.Parser.AST.Nodes;
 using Core.Parser.AST.Nodes.StatementNodes;
 using Core.Parser.AST.Nodes.LiteralNodes;
+using Core.Parser.AST.Nodes.ControlFlowNodes.LoopControlFlowNodes;
 
 namespace Core.Parser.Interfaces.AST;
 
@@ -9,6 +10,11 @@ namespace Core.Parser.Interfaces.AST;
 /// </summary>
 public interface IAstVisitor
 {
+    void Visit(IAstNode node)
+    {
+        _ = new NotImplementedException(nameof(node));
+    }
+
     void Visit(ProgramNode node);
     void Visit(VariableDeclarationNode node);
     void Visit(DoubleLiteralNode node);
@@ -19,4 +25,5 @@ public interface IAstVisitor
     void Visit(WriteStatementNode node);
     void Visit(ReadStatementNode node);
     void Visit(ReturnNode node);
+    void Visit(LoopControlFlowNode node);
 }
