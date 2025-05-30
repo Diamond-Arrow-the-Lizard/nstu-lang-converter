@@ -7,14 +7,15 @@ public enum TokenType
 {
     Eof, // End of file, a.k.a. ';'
 
-    ProgramBegin,
-    ProgramEnd,
+    ProgramBegin, // начало
+    ProgramEnd, // конец
 
-    IntegerType,
-    DoubleType,
-    StringType,
-    VariableName, 
+    IntegerType, // цел
+    DoubleType, // плав
+    StringType, // строка
+    VariableName,
 
+    // Types of the variable itself 
     Integer, 
     Double,
     Bool,
@@ -27,17 +28,17 @@ public enum TokenType
     Assign, // =
     Equals, // ==
 
-    ControlBegin, // a.k.a. '{'
-    If,
-    Else,
-    ControlEnd, // a.k.a. '}'
+    If, // если
+    ControlBegin, // то
+    Else, // иначе
+    ControlEnd, // кесли
 
-    LoopBegin, 
-    LoopTimes,
-    LoopEnd,
+    LoopBegin, // нц
+    LoopTimes, // i раз
+    LoopEnd, // кц
 
-    Return,
+    Return, // вернуть
 
-    Write,
-    Read,
+    Write, // написать
+    Read, // прочитать
 }
