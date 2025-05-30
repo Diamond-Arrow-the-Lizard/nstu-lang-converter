@@ -5,6 +5,13 @@ namespace Core.Parser.Interfaces.AST;
 /// </summary>
 public interface IAstNode
 {
+
+    /// <summary>
+    /// Perform an operation via the Visitor pattern
+    /// </summary>
+    /// <param name="visitor"></param>
+    void Accept(IAstVisitor visitor);
+
     /// <summary>
     /// Debug method for string representation of the node
     /// </summary>

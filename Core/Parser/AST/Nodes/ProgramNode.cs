@@ -13,6 +13,12 @@ public class ProgramNode(List<IAstNode> statements) : IAstNode
     public List<IAstNode> Statements { get; } = statements;
 
     /// <inheritdoc/>
+    public void Accept(IAstVisitor visitor)
+    {
+        visitor.Visit(this); 
+    }
+
+    /// <inheritdoc/>
     public string ToDebugString()
     {
         var statementStrings = Statements.Select(s => s.ToDebugString()).ToList();
