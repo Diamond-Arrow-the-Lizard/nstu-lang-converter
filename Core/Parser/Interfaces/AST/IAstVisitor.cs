@@ -1,4 +1,5 @@
 using Core.Parser.AST.Nodes;
+using Core.Parser.AST.Nodes.LiteralNodes;
 
 namespace Core.Parser.Interfaces.AST;
 
@@ -7,6 +8,10 @@ namespace Core.Parser.Interfaces.AST;
 /// </summary>
 public interface IAstVisitor
 {
-    void Visit(IAstNode node);
+    void Visit(ProgramNode node);
     void Visit(VariableDeclarationNode node);
+    void Visit(DoubleLiteralNode node);
+    void Visit(IntegerLiteralNode node);
+    void Visit(StringLiteralNode node);
+    void Visit(BinaryExpressionNode node);
 }
