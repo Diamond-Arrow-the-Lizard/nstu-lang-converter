@@ -18,7 +18,6 @@ public enum TokenType
     // Types of the variable itself 
     Integer, 
     Double,
-    Bool,
     String,
 
     Add, // +
