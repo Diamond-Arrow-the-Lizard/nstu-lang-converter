@@ -1,4 +1,5 @@
 using Core.Parser.AST.Nodes;
+using Core.Parser.AST.Nodes.FunctionNodes;
 using Core.Parser.AST.Nodes.LiteralNodes;
 
 namespace Core.Parser.Interfaces.AST;
@@ -15,4 +16,6 @@ public interface IAstVisitor
     void Visit(StringLiteralNode node);
     void Visit(BinaryExpressionNode node);
     void Visit(VariableReferenceNode node);
+    void Visit(WriteStatementNode node);
+    void Visit(ReadStatementNode node);
 }
