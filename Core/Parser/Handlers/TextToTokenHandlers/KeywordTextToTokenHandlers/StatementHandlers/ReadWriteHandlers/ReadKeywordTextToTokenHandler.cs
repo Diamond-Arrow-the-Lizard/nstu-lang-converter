@@ -2,7 +2,7 @@ using Core.Parser.Interfaces.Handlers;
 using Core.Parser.Interfaces.Repositories;
 using Core.Parser.Tokens;
 
-namespace Core.Parser.Handlers.TextToTokenHandlers.KeywordTextToTokenHandlers.FunctionHandlers.ReadWriteHandlers;
+namespace Core.Parser.Handlers.TextToTokenHandlers.KeywordTextToTokenHandlers.StatementHandlers.ReadWriteHandlers;
 
 public class ReadKeywordTextToTokenHandler : ITextToTokenHandler
 {

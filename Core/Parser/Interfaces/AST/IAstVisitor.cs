@@ -1,5 +1,5 @@
 using Core.Parser.AST.Nodes;
-using Core.Parser.AST.Nodes.FunctionNodes;
+using Core.Parser.AST.Nodes.StatementNodes;
 using Core.Parser.AST.Nodes.LiteralNodes;
 
 namespace Core.Parser.Interfaces.AST;

@@ -4,7 +4,7 @@ using Core.Parser.Handlers.TextToTokenHandlers;
 using Core.Parser.Handlers.TextToTokenHandlers.KeywordTextToTokenHandlers;
 using Core.Parser.Handlers.TextToTokenHandlers.KeywordTextToTokenHandlers.ControlFlowHandlers.IfElseHandlers;
 using Core.Parser.Handlers.TextToTokenHandlers.KeywordTextToTokenHandlers.ControlFlowHandlers.LoopHandlers;
-using Core.Parser.Handlers.TextToTokenHandlers.KeywordTextToTokenHandlers.FunctionHandlers.ReadWriteHandlers;
+using Core.Parser.Handlers.TextToTokenHandlers.KeywordTextToTokenHandlers.StatementHandlers.ReadWriteHandlers;
 using Core.Parser.Handlers.TextToTokenHandlers.KeywordTextToTokenHandlers.VariableTypeNameTextToTokenHandlers;
 using Core.Parser.Handlers.TextToTokenHandlers.OperationTextToTokenHandlers;
 using Core.Parser.Handlers.TextToTokenHandlers.VariableTypeTextToTokenHandlers;

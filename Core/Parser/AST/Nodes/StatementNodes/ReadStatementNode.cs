@@ -1,6 +1,6 @@
 using Core.Parser.Interfaces.AST;
 
-namespace Core.Parser.AST.Nodes.FunctionNodes;
+namespace Core.Parser.AST.Nodes.StatementNodes;
 
 /// <summary>
 /// Represents a 'read' (input) statement in the Abstract Syntax Tree (AST).
