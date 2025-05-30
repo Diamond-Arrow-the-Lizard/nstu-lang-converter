@@ -2,6 +2,7 @@ using Core.Parser.AST.Nodes;
 using Core.Parser.AST.Nodes.StatementNodes;
 using Core.Parser.AST.Nodes.LiteralNodes;
 using Core.Parser.AST.Nodes.ControlFlowNodes.LoopControlFlowNodes;
+using Core.Parser.AST.Nodes.ControlFlowNodes.IfElseControlFlowNodes;
 
 namespace Core.Parser.Interfaces.AST;
 
@@ -26,4 +27,5 @@ public interface IAstVisitor
     void Visit(ReadStatementNode node);
     void Visit(ReturnNode node);
     void Visit(LoopControlFlowNode node);
+    void Visit(IfElseControlFlowNode node);
 }
