@@ -7,6 +7,6 @@ namespace Core.Parser.Interfaces.AST;
 /// </summary>
 public interface IAstVisitor
 {
-    void Visit(ProgramNode node);
+    void Visit(IAstNode node);
     void Visit(VariableDeclarationNode node);
 }
