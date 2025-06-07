@@ -22,39 +22,21 @@ public class StringParser(ITokenRepository tokenRepository, IEnumerable<ITextToT
     {
         foreach (var token in SplitIntoTokens())
         {
-            // First, try to handle the token as a whole (e.g., keywords, literals, operators)
+            // First, try to handle the token as a whole (e.g., keywords, literals, operators, SEMICOLON)
             bool handled = TryTokenize(token);
 
             if (!handled) // If the token was not handled by specific handlers
             {
-                if (token.Contains(';'))
+                // This 'else' branch handles cases where a token might be a VariableName
+                // after special characters have been separated by the regex.
+                if (!string.IsNullOrWhiteSpace(token))
                 {
-                    // If it contains a semicolon, separate the part before the semicolon
-                    string noEofToken = token.Remove(token.IndexOf(';'));
-                    bool preEofHandled = TryTokenize(noEofToken); // Try to tokenize the part before ';'
-
-                    if (!preEofHandled && !string.IsNullOrWhiteSpace(noEofToken))
-                    {
-                        // If the part before ';' is not handled by specific handlers,
-                        // and it's not empty, assume it's a VariableName.
-                        _tokenRepository.AddToken(TokenType.VariableName, noEofToken);
-                    }
-                    // Always add Eof for the semicolon
-                    _tokenRepository.AddToken(TokenType.Eof, ";");
-                }
-                else
-                {
-                    // If no semicolon and not handled by specific handlers,
-                    // and it's not empty, it must be a VariableName.
-                    if (!string.IsNullOrWhiteSpace(token))
-                    {
-                        _tokenRepository.AddToken(TokenType.VariableName, token);
-                    }
+                    _tokenRepository.AddToken(TokenType.VariableName, token);
                 }
             }
-            // If `handled` is true from the first `TryTokenize(token)` call,
-            // or if the semicolon logic took care of it, we do nothing further.
         }
+        // IMPORTANT: Add the true Eof token at the very end of the entire token stream
+        _tokenRepository.AddToken(TokenType.Eof, ""); // Representation can be empty or "EOF"
     }
 
     /// <summary>
@@ -83,14 +65,20 @@ public class StringParser(ITokenRepository tokenRepository, IEnumerable<ITextToT
     {
         // Split on spaces, but preserve quoted strings as single tokens.
         // Also ensure semicolons directly attached to words are split, but don't split within quoted strings.
-        // This regex tries to capture:
+        // The regex specifically captures:
         // 1. Quoted strings (e.g., "Hello world")
-        // 2. Any non-whitespace, non-semicolon characters (e.g., "Num1")
-        // 3. Semicolons themselves
-        var regex = new Regex(@"(\"".*?\""|[^;\s]+|;)");
+        // 2. Any non-whitespace, non-semicolon characters (e.g., "Num1", "написать")
+        // 3. Semicolons themselves (;)
+        var regex = new Regex(@"(""[^""]*""|\w+|;|\S)"); // \w+ matches word characters (letters, numbers, underscore).
+                                                      // ; matches semicolon.
+                                                      // \S matches any non-whitespace for other symbols like operators if they are not covered by \w+ or quotes.
         foreach (Match match in regex.Matches(_text))
         {
-            yield return match.Value.Trim(); 
+            // Only yield non-empty, non-whitespace matches
+            if (!string.IsNullOrWhiteSpace(match.Value))
+            {
+                yield return match.Value; 
+            }
         }
     }
 }

@@ -5,7 +5,8 @@ namespace Core.Parser.Tokens;
 /// </summary>
 public enum TokenType
 {
-    Eof, // End of file, a.k.a. ';'
+    Eof, // End of file
+    Semicolon,
 
     ProgramBegin, // начало
     ProgramEnd, // конец

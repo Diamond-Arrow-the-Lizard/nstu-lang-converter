@@ -31,6 +31,8 @@ public static class CLI
             new ProgramBeginTextToTokenHandler(),
             new ProgramEndTextToTokenHandler(),
 
+            new SemicolonTextToTokenHandler(),
+
             new IntegerTextToTokenHandler(),
             new StringTextToTokenHandler(),
             new DoubleTextToTokenHandler(),
@@ -139,10 +141,13 @@ public static class CLI
         {
             Console.WriteLine($"Syntax Error: {ex.Message}");
         }
+        /*
         catch (Exception ex)
         {
             Console.WriteLine($"An unexpected error occurred: {ex.Message}");
         }
+        */
         Console.WriteLine("--------------------------\n");
+        
     }
 }

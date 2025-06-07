@@ -82,18 +82,16 @@ public class Parser(ITokenRepository tokenRepository) : IParser
     /// <returns>The root ProgramNode of the AST.</returns>
     public ProgramNode Parse()
     {
-        // Expect 'начало' to mark the program's beginning
         Expect(TokenType.ProgramBegin);
 
         List<IAstNode> statements = [];
 
-        // Parse statements until 'конец' or Eof is encountered
-        while (CurrentToken.TokenType != TokenType.ProgramEnd && CurrentToken.TokenType != TokenType.Eof)
+        // Parse statements until 'конец' (ProgramEnd)
+        while (CurrentToken.TokenType != TokenType.ProgramEnd)
         {
             statements.Add(ParseStatement());
         }
 
-        // Expect 'конец' to mark the program's end
         Expect(TokenType.ProgramEnd);
 
         // Expect Eof to ensure no extra tokens after the program
@@ -101,6 +99,7 @@ public class Parser(ITokenRepository tokenRepository) : IParser
 
         return new ProgramNode(statements);
     }
+
 
     /// <summary>
     /// Parses a single statement.
@@ -112,44 +111,47 @@ public class Parser(ITokenRepository tokenRepository) : IParser
     private IAstNode ParseStatement()
     {
         IAstNode statement;
+        TokenType initialTokenType = CurrentToken.TokenType;
 
-        // Check for an assignment expression statement (e.g., 'X = 5;')
-        // A variable name followed by an assignment operator suggests an assignment statement.
-        if (CurrentToken.TokenType == TokenType.VariableName && Peek(1).TokenType == TokenType.Assign)
+        if (initialTokenType == TokenType.VariableName && Peek(1).TokenType == TokenType.Assign)
         {
-            // Parse the entire assignment expression. ParseExpression will correctly build
-            // a BinaryExpressionNode with TokenType.Assign.
             statement = ParseExpression();
         }
         else
         {
-            // Dispatch to other statement parsing methods based on the current token type.
-            statement = CurrentToken.TokenType switch
+            statement = initialTokenType switch
             {
-                // цел, плав, строка
                 TokenType.IntegerType or TokenType.DoubleType or TokenType.StringType => ParseVariableDeclaration(),
-                // вернуть
                 TokenType.Return => ParseReturnStatement(),
-                // написать
                 TokenType.Write => ParseWriteStatement(),
-                // прочитать
                 TokenType.Read => ParseReadStatement(),
-                // нц
                 TokenType.LoopBegin => ParseLoopStatement(),
-                // если
                 TokenType.If => ParseIfStatement(),
                 _ => throw new SyntaxException($"Unexpected token '{CurrentToken.Representation}' ({CurrentToken.TokenType}) at position {_position}. Expected a statement."),
             };
         }
 
-        // After parsing any statement, consume the semicolon (represented as Eof token)
-        // This assumes every statement *must* be terminated by a semicolon.
-        // For control flow blocks (like if/loop), the body itself doesn't end with a semicolon,
-        // but statements *inside* them might. This general consumption might need refinement
-        // depending on strict grammar rules for statement terminators vs. block terminators.
-        if (CurrentToken.TokenType == TokenType.Eof)
+        // Consume semicolon ONLY if the statement was a simple statement (not a block)
+        // This requires knowing if the parsed statement was a 'block' type or not.
+        // A more robust way is to have specific parsing methods for 'simpleStatement' vs 'blockStatement'.
+        // For now, based on the current types in switch:
+        // VariableDeclaration, ReturnStatement, WriteStatement, ReadStatement, AssignmentExpression
+        // are simple statements that should be followed by a semicolon.
+        // LoopStatement, IfStatement are block statements and should NOT be followed by a semicolon.
+
+        // Check if the current statement *type* is one that expects a semicolon.
+        // Instead of checking 'CurrentToken.TokenType', which would be the token *after* the statement,
+        // we need to know what kind of statement was just parsed.
+        bool expectsSemicolon =
+            statement is VariableDeclarationNode ||
+            statement is ReturnNode ||
+            statement is WriteStatementNode ||
+            statement is ReadStatementNode ||
+            (statement is BinaryExpressionNode binaryExpr && binaryExpr.Operator == TokenType.Assign);
+
+        if (expectsSemicolon)
         {
-            Expect(TokenType.Eof);
+            Expect(TokenType.Semicolon);
         }
 
         return statement;
