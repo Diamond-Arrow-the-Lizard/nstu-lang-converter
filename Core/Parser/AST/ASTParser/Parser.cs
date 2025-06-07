@@ -1,13 +1,14 @@
 using Core.Parser.AST.Nodes;
 using Core.Parser.Interfaces.Models;
 using Core.Parser.Interfaces.Repositories;
-using Core.Parser.Models;
+using Core.Parser.Models; 
 using Core.Parser.Tokens;
 using Core.Parser.Interfaces.AST;
 using Core.Parser.AST.Nodes.StatementNodes;
 using Core.Parser.AST.Nodes.ControlFlowNodes.LoopControlFlowNodes;
 using Core.Parser.AST.Nodes.ControlFlowNodes.IfElseControlFlowNodes;
 using Core.Parser.AST.Nodes.LiteralNodes;
+using Core.Parser.AST.Nodes.ExpressionNodes; 
 
 namespace Core.Parser.AST.ASTParser;
 
@@ -39,348 +40,352 @@ public class Parser(ITokenRepository tokenRepository) : IParser
         int peekPosition = _position + offset;
         if (peekPosition >= _tokens.Count)
         {
-            // Return Eof token if we're trying to peek beyond the end of the token stream.
-            // This is a common practice to simplify grammar rules by always having a token.
-            return new Token(TokenType.Eof, ""); // Using concrete Token, adjust if IToken has static Eof factory.
+            return new Token(TokenType.Eof, ""); // Return Eof token if beyond bounds
         }
         return _tokens[peekPosition];
     }
 
     /// <summary>
-    /// Advances the parser's position to the next token.
+    /// Advances the parser to the next token and returns the current token.
     /// </summary>
-    private void Advance()
+    /// <returns>The token at the previous position.</returns>
+    private IToken Advance()
     {
-        if (_position < _tokens.Count)
-        {
-            _position++;
-        }
+        IToken token = CurrentToken;
+        _position++;
+        return token;
     }
 
     /// <summary>
     /// Consumes the current token if its type matches the expected type, then advances.
-    /// Throws a <see cref="SyntaxException"/> if the type does not match.
+    /// Throws a SyntaxException if the token type does not match.
     /// </summary>
-    /// <param name="expectedType">The expected token type.</param>
+    /// <param name="expectedType">The expected TokenType.</param>
     /// <returns>The consumed token.</returns>
-    /// <exception cref="SyntaxException">Thrown if the current token type does not match the expected type.</exception>
+    /// <exception cref="SyntaxException">Thrown if the current token's type does not match the expected type.</exception>
     private IToken Expect(TokenType expectedType)
     {
         if (CurrentToken.TokenType == expectedType)
         {
-            IToken consumedToken = CurrentToken;
-            Advance();
-            return consumedToken;
+            return Advance();
         }
-        throw new SyntaxException($"Expected token type {expectedType}, but found {CurrentToken.TokenType} ('{CurrentToken.Representation}') at position {_position}.");
+        throw new SyntaxException($"Expect: Unexpected token '{CurrentToken.Representation}' ({CurrentToken.TokenType}) at position {_position}. Expected '{expectedType}'.");
     }
 
     /// <summary>
-    /// The main entry point for parsing. Parses the entire program and returns the root AST node.
-    /// Grammar Rule: Program -> 'начало' Statement* 'конец' Eof
+    /// Checks if the given token type is a literal (Integer, Double, String, Bool).
     /// </summary>
-    /// <returns>The root ProgramNode of the AST.</returns>
+    private bool IsLiteral(TokenType type)
+    {
+        return type == TokenType.Integer ||
+               type == TokenType.Double ||
+               type == TokenType.String;
+    }
+
+    /// <summary>
+    /// Checks if the given token type is a variable type keyword.
+    /// </summary>
+    private bool IsTypeKeyword(TokenType type)
+    {
+        return type == TokenType.IntegerType ||
+               type == TokenType.DoubleType ||
+               type == TokenType.StringType;
+    }
+
+    /// <inheritdoc/>
     public ProgramNode Parse()
     {
         Expect(TokenType.ProgramBegin);
-
-        List<IAstNode> statements = [];
-
-        // Parse statements until 'конец' (ProgramEnd)
-        while (CurrentToken.TokenType != TokenType.ProgramEnd)
+        List<IAstNode> statements = new();
+        while (CurrentToken.TokenType != TokenType.ProgramEnd && CurrentToken.TokenType != TokenType.Eof)
         {
             statements.Add(ParseStatement());
         }
-
         Expect(TokenType.ProgramEnd);
-
-        // Expect Eof to ensure no extra tokens after the program
-        Expect(TokenType.Eof);
-
+        Expect(TokenType.Eof); // Ensure Eof is at the very end of the file
         return new ProgramNode(statements);
     }
 
-
     /// <summary>
     /// Parses a single statement.
-    /// This method will act as a dispatcher to other parsing methods based on the current token.
-    /// Grammar Rule: Statement -> VariableDeclaration | ReturnStatement | WriteStatement | ReadStatement | LoopStatement | IfStatement | AssignmentStatement | ExpressionStatement
     /// </summary>
-    /// <returns>An IAstNode representing the parsed statement.</returns>
+    /// <returns>An AST node representing the statement.</returns>
     /// <exception cref="SyntaxException">Thrown if an unexpected token is encountered.</exception>
     private IAstNode ParseStatement()
     {
-        IAstNode statement;
-        TokenType initialTokenType = CurrentToken.TokenType;
-
-        if (initialTokenType == TokenType.VariableName && Peek(1).TokenType == TokenType.Assign)
+        if (CurrentToken.TokenType == TokenType.Write)
         {
-            statement = ParseExpression();
+            return ParseWriteStatement();
         }
-        else
+        else if (CurrentToken.TokenType == TokenType.Read)
         {
-            statement = initialTokenType switch
-            {
-                TokenType.IntegerType or TokenType.DoubleType or TokenType.StringType => ParseVariableDeclaration(),
-                TokenType.Return => ParseReturnStatement(),
-                TokenType.Write => ParseWriteStatement(),
-                TokenType.Read => ParseReadStatement(),
-                TokenType.LoopBegin => ParseLoopStatement(),
-                TokenType.If => ParseIfStatement(),
-                _ => throw new SyntaxException($"Unexpected token '{CurrentToken.Representation}' ({CurrentToken.TokenType}) at position {_position}. Expected a statement."),
-            };
+            return ParseReadStatement();
         }
-
-        // Consume semicolon ONLY if the statement was a simple statement (not a block)
-        // This requires knowing if the parsed statement was a 'block' type or not.
-        // A more robust way is to have specific parsing methods for 'simpleStatement' vs 'blockStatement'.
-        // For now, based on the current types in switch:
-        // VariableDeclaration, ReturnStatement, WriteStatement, ReadStatement, AssignmentExpression
-        // are simple statements that should be followed by a semicolon.
-        // LoopStatement, IfStatement are block statements and should NOT be followed by a semicolon.
-
-        // Check if the current statement *type* is one that expects a semicolon.
-        // Instead of checking 'CurrentToken.TokenType', which would be the token *after* the statement,
-        // we need to know what kind of statement was just parsed.
-        bool expectsSemicolon =
-            statement is VariableDeclarationNode ||
-            statement is ReturnNode ||
-            statement is WriteStatementNode ||
-            statement is ReadStatementNode ||
-            (statement is BinaryExpressionNode binaryExpr && binaryExpr.Operator == TokenType.Assign);
-
-        if (expectsSemicolon)
+        else if (CurrentToken.TokenType == TokenType.If)
         {
-            Expect(TokenType.Semicolon);
+            return ParseIfStatement();
         }
-
-        return statement;
+        else if (CurrentToken.TokenType == TokenType.LoopBegin)
+        {
+            return ParseLoopStatement();
+        }
+        else if (CurrentToken.TokenType == TokenType.Return)
+        {
+            return ParseReturnStatement();
+        }
+        else if (IsTypeKeyword(CurrentToken.TokenType))
+        {
+            // Variable declaration statement: "цел X = 1 + 1;" or "цел X;"
+            VariableDeclarationNode declaration = ParseVariableDeclaration();
+            Expect(TokenType.Semicolon); 
+            return declaration;
+        }
+        else if (CurrentToken.TokenType == TokenType.VariableName ||
+                 IsLiteral(CurrentToken.TokenType) ||
+                 CurrentToken.TokenType == TokenType.Add || // Potentially for unary plus
+                 CurrentToken.TokenType == TokenType.Decrement) // Potentially for unary minus
+        {
+            // This handles expression statements, e.g., "Num1 = Num1 + 2 * 3;"
+            IAstNode expressionStatement = ParseAssignmentExpression(); 
+            Expect(TokenType.Semicolon); 
+            return expressionStatement;
+        }
+        throw new SyntaxException($"ParseStatement: Unexpected token '{CurrentToken.Representation}' ({CurrentToken.TokenType}) at position {_position}. Expected a statement.");
     }
 
     /// <summary>
-    /// Parses a variable declaration statement.
-    /// Grammar Rule: VariableDeclaration -> (IntegerType | DoubleType | StringType) VariableName ('=' Expression)? ';'
+    /// Parses a variable declaration.
+    /// Examples: "цел X;" or "цел X = 1 + 1;".
     /// </summary>
     /// <returns>A VariableDeclarationNode.</returns>
     private VariableDeclarationNode ParseVariableDeclaration()
     {
-        TokenType variableTypeToken = CurrentToken.TokenType;
-        Expect(variableTypeToken); // Consume 'цел', 'плав', or 'строка'
-
-        IToken variableNameToken = Expect(TokenType.VariableName); // Consume variable name
+        TokenType variableType = Advance().TokenType; // Consume IntegerType, DoubleType, or StringType
+        string variableName = Expect(TokenType.VariableName).Representation; // Consume variable name
 
         IAstNode? initialValue = null;
-        if (CurrentToken.TokenType == TokenType.Assign) // '='
+        if (CurrentToken.TokenType == TokenType.Assign)
         {
             Advance(); // Consume '='
-            initialValue = ParseExpression(); // Parse the expression for initial value
+            initialValue = ParseExpression(); // Parse the expression for the initial value
         }
 
-        return new VariableDeclarationNode(variableTypeToken, variableNameToken.Representation, initialValue);
-    }
-
-    /// <summary>
-    /// Parses a return statement.
-    /// Grammar Rule: ReturnStatement -> 'вернуть' Expression? ';'
-    /// </summary>
-    /// <returns>A ReturnNode.</returns>
-    private ReturnNode ParseReturnStatement()
-    {
-        Expect(TokenType.Return); // Consume 'вернуть'
-
-        IAstNode? expression = null;
-        // If the next token is not Eof (semicolon), then there's an expression to parse.
-        // This assumes 'вернуть;' is valid for void return, and 'вернуть expr;' for value return.
-        // Also check for block ending tokens to allow 'return X' inside a block without a semicolon.
-        if (CurrentToken.TokenType != TokenType.Eof &&
-            CurrentToken.TokenType != TokenType.ProgramEnd &&
-            CurrentToken.TokenType != TokenType.ControlEnd &&
-            CurrentToken.TokenType != TokenType.LoopEnd)
-        {
-            expression = ParseExpression();
-        }
-
-        return new ReturnNode(expression);
+        return new VariableDeclarationNode(variableType, variableName, initialValue);
     }
 
     /// <summary>
     /// Parses a write statement.
-    /// Grammar Rule: WriteStatement -> 'написать' Expression ';'
+    /// Example: "написать "Hello, World!"".
     /// </summary>
     /// <returns>A WriteStatementNode.</returns>
     private WriteStatementNode ParseWriteStatement()
     {
-        Expect(TokenType.Write); // Consume 'написать'
-        IAstNode expression = ParseExpression(); // Must have an expression
-
+        Expect(TokenType.Write); // Consume "написать"
+        IAstNode expression = ParseExpression(); // The expression to write
+        Expect(TokenType.Semicolon);
         return new WriteStatementNode(expression);
     }
 
     /// <summary>
     /// Parses a read statement.
-    /// Grammar Rule: ReadStatement -> 'прочитать' VariableName ';'
+    /// Example: "прочитать X;".
     /// </summary>
     /// <returns>A ReadStatementNode.</returns>
     private ReadStatementNode ParseReadStatement()
     {
-        Expect(TokenType.Read); // Consume 'прочитать'
+        Expect(TokenType.Read); // Consume "прочитать"
         IToken variableNameToken = Expect(TokenType.VariableName);
-
-        VariableReferenceNode targetVariable = new(TokenType.VariableName, variableNameToken.Representation);
-
-        return new ReadStatementNode(targetVariable);
+        Expect(TokenType.Semicolon);
+        return new ReadStatementNode(new VariableReferenceNode(TokenType.VariableName, variableNameToken.Representation));
     }
 
-    /// <summary>
-    /// Parses a loop statement.
-    /// Grammar Rule: LoopStatement -> 'нц' (IntegerLiteral | VariableName) 'раз' Statement* 'кц'
-    /// </summary>
-    /// <returns>A LoopControlFlowNode.</returns>
-    private LoopControlFlowNode ParseLoopStatement()
-    {
-        Expect(TokenType.LoopBegin); // Consume 'нц'
-
-        // The loop count expression can be an integer literal or a variable reference
-        IAstNode loopCountExpression;
-        if (CurrentToken.TokenType == TokenType.Integer)
-        {
-            loopCountExpression = ParseIntegerLiteral();
-        }
-        else if (CurrentToken.TokenType == TokenType.VariableName)
-        {
-            // Assuming variable reference as loop count for now. Type check later.
-            IToken variableNameToken = Expect(TokenType.VariableName);
-            loopCountExpression = new VariableReferenceNode(TokenType.VariableName, variableNameToken.Representation); // Placeholder type
-        }
-        else
-        {
-            throw new SyntaxException($"Expected an integer literal or variable name for loop count, but found {CurrentToken.TokenType} at position {_position}.");
-        }
-
-        Expect(TokenType.LoopTimes); // Consume 'раз'
-
-        List<IAstNode> loopBody = [];
-        while (CurrentToken.TokenType != TokenType.LoopEnd && CurrentToken.TokenType != TokenType.Eof)
-        {
-            loopBody.Add(ParseStatement());
-        }
-
-        Expect(TokenType.LoopEnd); // Consume 'кц'
-
-        return new LoopControlFlowNode(loopCountExpression, loopBody);
-    }
 
     /// <summary>
-    /// Parses an if statement.
-    /// Grammar Rule: IfStatement -> 'если' Expression 'то' Statement* ('иначе' Statement*)? 'кесли'
+    /// Parses an IF-ELSE control flow statement.
+    /// Example: "если Condition то Statement1 иначе Statement2 кесли;".
     /// </summary>
     /// <returns>An IfElseControlFlowNode.</returns>
     private IfElseControlFlowNode ParseIfStatement()
     {
-        Expect(TokenType.If); // Consume 'если'
-
+        Expect(TokenType.If); // Consume "если"
         IAstNode condition = ParseExpression(); // Parse the condition expression
+        Expect(TokenType.ControlBegin); // Consume "то"
 
-        Expect(TokenType.ControlBegin); // Consume 'то'
-
-        List<IAstNode> thenBlock = [];
-        // Loop until 'иначе', 'кесли', or Eof
+        List<IAstNode> ifBody = new();
         while (CurrentToken.TokenType != TokenType.Else && CurrentToken.TokenType != TokenType.ControlEnd && CurrentToken.TokenType != TokenType.Eof)
         {
-            thenBlock.Add(ParseStatement());
+            ifBody.Add(ParseStatement());
         }
 
-        List<IAstNode>? elseBlock = null;
-        if (CurrentToken.TokenType == TokenType.Else) // Optional 'иначе'
+        List<IAstNode>? elseBody = null;
+        if (CurrentToken.TokenType == TokenType.Else)
         {
-            Advance(); // Consume 'иначе'
-            elseBlock = [];
-            // Loop until 'кесли' or Eof
+            Advance(); // Consume "иначе"
+            elseBody = new List<IAstNode>();
             while (CurrentToken.TokenType != TokenType.ControlEnd && CurrentToken.TokenType != TokenType.Eof)
             {
-                elseBlock.Add(ParseStatement());
+                elseBody.Add(ParseStatement());
             }
         }
-
-        Expect(TokenType.ControlEnd); // Consume 'кесли'
-
-        return new IfElseControlFlowNode(condition, thenBlock, elseBlock);
+        Expect(TokenType.ControlEnd); // Consume "кесли"
+        // Semicolon is expected by ParseStatement after this method returns
+        return new IfElseControlFlowNode(condition, ifBody, elseBody);
     }
 
+    /// <summary>
+    /// Parses a loop statement.
+    /// Example: "нц 5 раз Statement1 кц;".
+    /// </summary>
+    /// <returns>A LoopControlFlowNode.</returns>
+    private LoopControlFlowNode ParseLoopStatement()
+    {
+        Expect(TokenType.LoopBegin); // Consume "нц"
+        IAstNode times = ParseExpression(); // Parse the number of loop iterations
+        Expect(TokenType.LoopTimes); // Consume "раз"
+
+        List<IAstNode> loopBody = new();
+        while (CurrentToken.TokenType != TokenType.LoopEnd && CurrentToken.TokenType != TokenType.Eof)
+        {
+            loopBody.Add(ParseStatement());
+        }
+        Expect(TokenType.LoopEnd); // Consume "кц"
+        return new LoopControlFlowNode(times, loopBody);
+    }
 
     /// <summary>
-    /// Parses a general expression, handling operator precedence (currently not fully implemented,
-    /// just handles simple binary expressions and literals).
-    /// Grammar Rule: Expression -> Term (('+' | '-') Term)* (simplified for now)
+    /// Parses a return statement.
+    /// Example: "вернуть 0;".
     /// </summary>
-    /// <returns>An IAstNode representing the parsed expression.</returns>
+    /// <returns>A ReturnNode.</returns>
+    private ReturnNode ParseReturnStatement()
+    {
+        Expect(TokenType.Return); // Consume "вернуть"
+        IAstNode expression = ParseExpression(); // The expression to return
+        Expect(TokenType.Semicolon);
+        return new ReturnNode(expression);
+    }
+
+    /// <summary>
+    /// Parses an expression based on operator precedence (lowest to highest).
+    /// </summary>
+    /// <returns>An AST node representing the expression.</returns>
+    /// <exception cref="SyntaxException">Thrown if an invalid expression is encountered.</exception>
     private IAstNode ParseExpression()
     {
-        // For simplicity, we'll start with parsing simple terms (literals, variable references)
-        // and then handle binary operations. This needs proper operator precedence parsing (e.g., Shunting-yard or precedence climbing).
-        // For now, let's parse a "primary" expression first.
-        IAstNode left = ParsePrimaryExpression();
+        // Start with the lowest precedence: assignment
+        return ParseAssignmentExpression();
+    }
 
-        // Handle binary operators like +, -, *, /, =, ==
-        while (IsBinaryOperator(CurrentToken.TokenType))
+    /// <summary>
+    /// Parses an assignment expression (e.g., X = 5, A = B = C).
+    /// </summary>
+    /// <returns>An IAstNode representing the assignment or the parsed left-hand side.</returns>
+    private IAstNode ParseAssignmentExpression()
+    {
+        // This ensures right-associativity for assignments.
+        // Example: A = B = C will parse as A = (B = C)
+        IAstNode left = ParseEqualityExpression();
+
+        if (CurrentToken.TokenType == TokenType.Assign)
         {
-            TokenType opType = CurrentToken.TokenType;
-            Advance(); // Consume the operator
+            IToken op = Advance(); // Consume '='
+            IAstNode right = ParseAssignmentExpression(); // Recursively parse the right side
+            return new BinaryExpressionNode(left, op.TokenType, right);
+        }
 
-            IAstNode right = ParsePrimaryExpression(); // For now, assumes right operand is also a primary expression.
-                                                       // This will need to be replaced with a proper precedence parser.
+        return left; // Not an assignment, just return the parsed expression
+    }
 
-            left = new BinaryExpressionNode(left, opType, right);
+    /// <summary>
+    /// Parses an equality expression (e.g., X == Y).
+    /// </summary>
+    /// <returns>An IAstNode representing the equality expression or the next higher precedence expression.</returns>
+    private IAstNode ParseEqualityExpression()
+    {
+        IAstNode left = ParseAdditiveExpression(); // Arithmetic expressions have higher precedence than equality
+
+        while (CurrentToken.TokenType == TokenType.Equals)
+        {
+            IToken op = Advance(); // Consume '=='
+            IAstNode right = ParseAdditiveExpression();
+            left = new BinaryExpressionNode(left, op.TokenType, right);
         }
 
         return left;
     }
 
     /// <summary>
-    /// Determines if a token type is a binary operator.
+    /// Parses an additive expression (e.g., 1 + 2, X - Y).
     /// </summary>
-    private bool IsBinaryOperator(TokenType type)
+    /// <returns>An IAstNode representing the additive expression or the next higher precedence expression.</returns>
+    private IAstNode ParseAdditiveExpression()
     {
-        return type == TokenType.Add ||
-               type == TokenType.Decrement ||
-               type == TokenType.Multiply ||
-               type == TokenType.Divide ||
-               type == TokenType.Assign || // Assignment is also a binary operator
-               type == TokenType.Equals;
+        IAstNode left = ParseMultiplicativeExpression();
+
+        while (CurrentToken.TokenType == TokenType.Add || CurrentToken.TokenType == TokenType.Decrement)
+        {
+            IToken op = Advance();
+            IAstNode right = ParseMultiplicativeExpression();
+            left = new BinaryExpressionNode(left, op.TokenType, right);
+        }
+
+        return left;
     }
 
     /// <summary>
-    /// Parses a primary expression (e.g., a literal or a variable reference).
+    /// Parses a multiplicative expression (e.g., 2 * 3, A / B).
+    /// </summary>
+    /// <returns>An IAstNode representing the multiplicative expression or the next higher precedence expression.</returns>
+    private IAstNode ParseMultiplicativeExpression()
+    {
+        IAstNode left = ParsePrimaryExpression();
+
+        while (CurrentToken.TokenType == TokenType.Multiply || CurrentToken.TokenType == TokenType.Divide)
+        {
+            IToken op = Advance();
+            IAstNode right = ParsePrimaryExpression();
+            left = new BinaryExpressionNode(left, op.TokenType, right);
+        }
+
+        return left;
+    }
+
+    /// <summary>
+    /// Parses a primary expression (literals, variable references, parenthesized expressions).
     /// </summary>
     /// <returns>An IAstNode representing the primary expression.</returns>
     /// <exception cref="SyntaxException">Thrown if an unexpected token is encountered.</exception>
     private IAstNode ParsePrimaryExpression()
     {
-        IAstNode result;
-        switch (CurrentToken.TokenType)
+        if (CurrentToken.TokenType == TokenType.Integer)
         {
-            case TokenType.Integer:
-                result = ParseIntegerLiteral();
-                break;
-            case TokenType.Double:
-                result = ParseDoubleLiteral();
-                break;
-            case TokenType.String:
-                result = ParseStringLiteral();
-                break;
-            case TokenType.VariableName:
-                // When parsing a variable reference, we only know its name here.
-                // Its actual type would be resolved during semantic analysis.
-                // For now, we use TokenType.VariableName as a placeholder for its type.
-                IToken variableToken = Expect(TokenType.VariableName);
-                result = new VariableReferenceNode(TokenType.VariableName, variableToken.Representation);
-                break;
-            // TODO: Add support for parenthesized expressions, function calls etc.
-            default:
-                throw new SyntaxException($"Unexpected token '{CurrentToken.Representation}' ({CurrentToken.TokenType}) at position {_position}. Expected a literal or variable name for an expression.");
+            return ParseIntegerLiteral();
         }
-        // Null checks for literal parsing methods are now handled inside those methods or by their return types.
-        return result;
+        else if (CurrentToken.TokenType == TokenType.Double)
+        {
+            return ParseDoubleLiteral();
+        }
+        else if (CurrentToken.TokenType == TokenType.String)
+        {
+            return ParseStringLiteral();
+        }
+        else if (CurrentToken.TokenType == TokenType.VariableName)
+        {
+            IToken varNameToken = Advance();
+            // VariableReferenceNode now expects a TokenType for the variable type.
+            // Since we don't have a symbol table during parsing, we pass TokenType.VariableName as a placeholder
+            // for the VariableType. Semantic analysis would resolve this to the actual declared type.
+            return new VariableReferenceNode(TokenType.VariableName, varNameToken.Representation);
+        }
+        // If parentheses are part of your grammar for grouping expressions
+        else if (CurrentToken.TokenType == TokenType.ControlBegin) 
+        {
+            Advance(); 
+            IAstNode expression = ParseExpression();
+            Expect(TokenType.ControlEnd); 
+            return expression;
+        }
+        throw new SyntaxException($"ParsePrimaryExpression: Unexpected token '{CurrentToken.Representation}' ({CurrentToken.TokenType}) at position {_position}. Expected a primary expression (literal or variable name).");
     }
 
     /// <summary>
@@ -422,7 +427,7 @@ public class Parser(ITokenRepository tokenRepository) : IParser
     {
         IToken token = Expect(TokenType.String);
         // Remove quotes from the string representation
-        string stringValue = token.Representation.Trim('"');
+        string stringValue = token.Representation.Trim('\"');
         return new StringLiteralNode(stringValue);
     }
 }

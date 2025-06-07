@@ -3,6 +3,7 @@ using Core.Parser.AST.Nodes.StatementNodes;
 using Core.Parser.AST.Nodes.LiteralNodes;
 using Core.Parser.AST.Nodes.ControlFlowNodes.LoopControlFlowNodes;
 using Core.Parser.AST.Nodes.ControlFlowNodes.IfElseControlFlowNodes;
+using Core.Parser.AST.Nodes.ExpressionNodes;
 
 namespace Core.Parser.Interfaces.AST;
 

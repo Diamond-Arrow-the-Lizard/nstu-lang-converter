@@ -35,17 +35,24 @@ public class StringParser(ITokenRepository tokenRepository, IEnumerable<ITextToT
                 }
             }
         }
-        // IMPORTANT: Add the true Eof token at the very end of the entire token stream
-        _tokenRepository.AddToken(TokenType.Eof, ""); // Representation can be empty or "EOF"
+        if (_tokenRepository.GetAllTokens().LastOrDefault()?.TokenType != TokenType.Eof)
+        {
+            _tokenRepository.AddToken(TokenType.Eof, ""); 
+        }
     }
 
     /// <summary>
     /// Tokenizes an expression if possible
     /// </summary>
     /// <param name="token"> Text to tokenize </param>
-    /// <returns> true if successfully handled </returns>
+    /// <returns> true if successfully hancled </returns>
     private bool TryTokenize(string token)
     {
+        if (token == ";")
+        {
+            _tokenRepository.AddToken(TokenType.Semicolon, token); 
+            return true;
+        }
         foreach (var handler in _TextToTokenHandlers)
         {
             if (handler.CanHandle(token))
@@ -63,19 +70,20 @@ public class StringParser(ITokenRepository tokenRepository, IEnumerable<ITextToT
     /// <returns> String valid for parsing </returns>
     private IEnumerable<string> SplitIntoTokens()
     {
-        // Split on spaces, but preserve quoted strings as single tokens.
-        // Also ensure semicolons directly attached to words are split, but don't split within quoted strings.
-        // The regex specifically captures:
+        // Regex to split the input string into meaningful tokens.
+        // It prioritizes:
         // 1. Quoted strings (e.g., "Hello world")
-        // 2. Any non-whitespace, non-semicolon characters (e.g., "Num1", "написать")
-        // 3. Semicolons themselves (;)
-        var regex = new Regex(@"(""[^""]*""|\w+|;|\S)"); // \w+ matches word characters (letters, numbers, underscore).
-                                                      // ; matches semicolon.
-                                                      // \S matches any non-whitespace for other symbols like operators if they are not covered by \w+ or quotes.
+        // 2. Multi-character operators (e.g., "==")
+        // 3. Numbers (integers and doubles) using \b\d+(\.\d+)?\b for precise matching
+        // 4. Word characters (for keywords and variable names) using \b\w+\b
+        // 5. Single-character operators and delimiters (e.g., +, -, *, /, =, ;, {, })
+        // It specifically ignores whitespace.
+        var regex = new Regex(@"""[^""]*""|==|\b\d+(\.\d+)?\b|\b\w+\b|[+\-*/=;{}]");
+        
         foreach (Match match in regex.Matches(_text))
         {
             // Only yield non-empty, non-whitespace matches
-            if (!string.IsNullOrWhiteSpace(match.Value))
+            if (!string.IsNullOrWhiteSpace(match.Value) && !char.IsWhiteSpace(match.Value[0]))
             {
                 yield return match.Value; 
             }

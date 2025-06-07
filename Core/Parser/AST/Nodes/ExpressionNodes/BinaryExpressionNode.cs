@@ -1,7 +1,7 @@
-using Core.Parser.Interfaces.AST; 
-using Core.Parser.Tokens;          
+using Core.Parser.Interfaces.AST;
+using Core.Parser.Tokens;
 
-namespace Core.Parser.AST.Nodes;
+namespace Core.Parser.AST.Nodes.ExpressionNodes;
 
 /// <summary>
 /// Represents a binary expression in the Abstract Syntax Tree (AST).
