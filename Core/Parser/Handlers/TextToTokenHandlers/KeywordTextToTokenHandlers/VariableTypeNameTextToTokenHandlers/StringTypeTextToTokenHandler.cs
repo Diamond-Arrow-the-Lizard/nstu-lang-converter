@@ -6,6 +6,6 @@ namespace Core.Parser.Handlers.TextToTokenHandlers.KeywordTextToTokenHandlers.Va
 
 public class StringTypeKeywordTextToTokenHandler : ITextToTokenHandler
 {
-    public bool CanHandle(string word) => word == "плав";
+    public bool CanHandle(string word) => word == "строка";
     public void Handle(string word, ITokenRepository repo) => repo.AddToken(TokenType.StringType, word);
 }
