@@ -29,4 +29,10 @@ public interface IAstVisitor
     void Visit(ReturnNode node);
     void Visit(LoopControlFlowNode node);
     void Visit(IfElseControlFlowNode node);
+
+    /// <summary>
+    /// Gets the generated code.
+    /// </summary>
+    /// <returns>A string containing the code.</returns>
+    public string GetGeneratedCode();
 }

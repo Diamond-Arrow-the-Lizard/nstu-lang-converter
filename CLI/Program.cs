@@ -17,6 +17,7 @@ using Core.Parser.Services;
 using Core.Parser.AST.ASTParser;
 using Core.Parser.AST.Nodes;
 using Core.Parser.Interfaces.AST;
+using Core.Parser.CodeGenerator;
 
 namespace CLI;
 
@@ -58,13 +59,14 @@ public static class CLI
 
             new ReadKeywordTextToTokenHandler(),
             new WriteKeywordTextToTokenHandler(),
-            new SemicolonTextToTokenHandler(), 
+            new SemicolonTextToTokenHandler(),
         ]);
 
         serviceCollection.AddSingleton<ITokenService, TokenService>();
         serviceCollection.AddSingleton<ITokenRepository, TokenRepository>();
         serviceCollection.AddSingleton<IStringParser, StringParser>();
-        serviceCollection.AddSingleton<IParser, Core.Parser.AST.ASTParser.Parser>();
+        serviceCollection.AddSingleton<IParser, Parser>();
+        serviceCollection.AddSingleton<IAstVisitor, CSharpCodeGeneratorVisitor>();
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
@@ -90,6 +92,11 @@ public static class CLI
     написать ""Вы ввели: "";
     написать Message;
 
+    цел Var;
+    прочитать Var;
+    написать ""Var: "";
+    написать Var;
+
     если Num1 == 11 то
         написать ""Num1 стало 11!"";
     иначе
@@ -102,7 +109,6 @@ public static class CLI
         Counter = Counter + 1;
     кц
 
-    вернуть 0;
 конец".Trim(); // Trim to remove any leading/trailing whitespace from the multi-line string itself.
 
         Console.WriteLine("--- Text to parse ---");
@@ -111,15 +117,15 @@ public static class CLI
 
         // 3. Get services and execute parsing
         var stringParser = serviceProvider.GetRequiredService<IStringParser>();
-        var tokenRepository = serviceProvider.GetRequiredService<ITokenRepository>(); 
+        var tokenRepository = serviceProvider.GetRequiredService<ITokenRepository>();
 
         stringParser.SetText(textToParse);
-        stringParser.MakeTokenizedExpression(); 
+        stringParser.MakeTokenizedExpression();
 
         List<IToken> tokens = tokenRepository.GetAllTokens();
         Console.WriteLine("--- Tokenization Result ---");
         int i = 0;
-        foreach(var token in tokens)
+        foreach (var token in tokens)
         {
             Console.WriteLine($"Position:{i}, Token type:{token.TokenType}, representation: '{token.Representation}'");
             ++i;
@@ -133,17 +139,24 @@ public static class CLI
         {
             ProgramNode ast = parser.Parse();
             Console.WriteLine("AST built successfully!");
-            // You can print the debug string of the root node to see the AST structure
             Console.WriteLine(ast.ToDebugString());
+            Console.WriteLine("--------------------------\n");
+            Console.WriteLine("--- C# Code Generation Result ---");
+            var cSharpGenerator = serviceProvider.GetRequiredService<IAstVisitor>();
+            ast.Accept(cSharpGenerator); // Start the visit process
+            string generatedCSharpCode = cSharpGenerator.GetGeneratedCode();
+            Console.WriteLine(generatedCSharpCode);
+            Console.WriteLine("---------------------------------\n");
         }
+        
         catch (SyntaxException ex)
         {
             Console.WriteLine($"Syntax Error: {ex.Message}");
         }
+        
         catch (Exception ex)
         {
             Console.WriteLine($"An unexpected error occurred: {ex.Message}");
         }
-        Console.WriteLine("--------------------------\n");
     }
 }

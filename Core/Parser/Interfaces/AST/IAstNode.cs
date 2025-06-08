@@ -17,4 +17,5 @@ public interface IAstNode
     /// </summary>
     /// <returns> String representation of the node </returns>
     string ToDebugString(); 
+
 }
