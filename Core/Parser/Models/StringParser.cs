@@ -25,7 +25,7 @@ public class StringParser(ITokenRepository tokenRepository, IEnumerable<ITextToT
             // First, try to handle the token as a whole (e.g., keywords, literals, operators, SEMICOLON)
             bool handled = TryTokenize(token);
 
-            if (!handled) // If the token was not handled by specific handlers
+            if (!handled) 
             {
                 // This 'else' branch handles cases where a token might be a VariableName
                 // after special characters have been separated by the regex.

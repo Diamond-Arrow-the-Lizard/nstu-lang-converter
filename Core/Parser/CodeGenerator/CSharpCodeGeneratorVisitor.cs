@@ -126,7 +126,6 @@ public class CSharpCodeGeneratorVisitor : IAstVisitor
             case TokenType.StringType:
                 cSharpType = "string";
                 break;
-            // No default needed as per the given token types.
         }
 
         if (node.InitialValueExpression != null)
@@ -136,10 +135,10 @@ public class CSharpCodeGeneratorVisitor : IAstVisitor
             // Visit the initial value expression. The expression itself will append its representation.
             // Note: We temporarily reduce indentation for the expression itself to align correctly with the assignment.
             // This is a simple approach, more complex scenarios might need a dedicated expression visitor.
-            _stringBuilder.Length -= IndentUnit.Length * _indentationLevel; // Remove current indentation
-            node.InitialValueExpression.Accept(this); //
-            _stringBuilder.AppendLine(";"); // Append semicolon at the end of the line
-            Indent(); // Restore indentation for subsequent lines
+            _stringBuilder.Length -= IndentUnit.Length * _indentationLevel; 
+            node.InitialValueExpression.Accept(this); 
+            _stringBuilder.AppendLine(";"); 
+            Indent(); 
         }
         else
         {
@@ -198,7 +197,6 @@ public class CSharpCodeGeneratorVisitor : IAstVisitor
         else
         {
             // For other binary expressions, wrap operands in parentheses for correct operator precedence
-            // This is a simplification; a full solution would require handling operator precedence
             _stringBuilder.Append("(");
             node.Left.Accept(this);
             _stringBuilder.Append($" {TokenToCSharpOperator(node.Operator)} ");
@@ -224,10 +222,10 @@ public class CSharpCodeGeneratorVisitor : IAstVisitor
     {
         AppendLine("Console.WriteLine(");
         Indent();
-        _stringBuilder.Length -= IndentUnit.Length * _indentationLevel; // Adjust indentation for expression
-        node.Expression.Accept(this); // The expression itself will append its representation
+        _stringBuilder.Length -= IndentUnit.Length * _indentationLevel; 
+        node.Expression.Accept(this); 
         _stringBuilder.AppendLine(");");
-        Indent(); // Restore indentation
+        Indent(); 
     }
 
     /// <summary>
@@ -301,14 +299,14 @@ public class CSharpCodeGeneratorVisitor : IAstVisitor
     {
         AppendLine("if (");
         Indent();
-        _stringBuilder.Length -= IndentUnit.Length * _indentationLevel; // Adjust indentation for expression
+        _stringBuilder.Length -= IndentUnit.Length * _indentationLevel; 
         node.Condition.Accept(this); 
         _stringBuilder.AppendLine(")");
         Indent();
         AppendLine("{");
         Indent();
 
-        foreach (var statement in node.ThenBlock) // Corrected from node.IfBody
+        foreach (var statement in node.ThenBlock) 
         {
             statement.Accept(this); 
         }
@@ -316,12 +314,12 @@ public class CSharpCodeGeneratorVisitor : IAstVisitor
         Dedent();
         AppendLine("}");
 
-        if (node.ElseBlock != null && node.ElseBlock.Any()) // Corrected from node.ElseBody
+        if (node.ElseBlock != null && node.ElseBlock.Any()) 
         {
             AppendLine("else");
             AppendLine("{");
             Indent();
-            foreach (var statement in node.ElseBlock) // Corrected from node.ElseBody
+            foreach (var statement in node.ElseBlock) 
             {
                 statement.Accept(this); 
             }
