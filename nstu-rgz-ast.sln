@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CLI", "CLI\CLI.csproj", "{1A737A17-E3FA-4D99-BBC4-10FBDCB316C5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GUI", "GUI\GUI.csproj", "{5C5D1E21-1550-4DB4-8896-6463D415E3EE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{1A737A17-E3FA-4D99-BBC4-10FBDCB316C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A737A17-E3FA-4D99-BBC4-10FBDCB316C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A737A17-E3FA-4D99-BBC4-10FBDCB316C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C5D1E21-1550-4DB4-8896-6463D415E3EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C5D1E21-1550-4DB4-8896-6463D415E3EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C5D1E21-1550-4DB4-8896-6463D415E3EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C5D1E21-1550-4DB4-8896-6463D415E3EE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
