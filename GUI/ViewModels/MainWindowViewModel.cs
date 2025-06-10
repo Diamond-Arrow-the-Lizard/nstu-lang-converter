@@ -57,8 +57,9 @@ public partial class MainWindowViewModel(
         CSharpCodeOutputViewModel.ErrorMessage = string.Empty;
 
         _stringParser.ClearRepository();
-        _parser.Tokens.Clear();
+        _parser.ClearParser();
         _tokenRepository.ClearRepository();
+        _cSharpCodeGenerator.ClearGeneratedString();
 
         if (string.IsNullOrWhiteSpace(PseudocodeEditorViewModel.PseudocodeText))
         {
@@ -74,7 +75,7 @@ public partial class MainWindowViewModel(
             // 2. Tokenization
             _stringParser.MakeTokenizedExpression();
             _tokenRepository = _stringParser.GetTokenRepository();
-            _parser.Tokens = _tokenRepository.GetAllTokens().ToList();
+            _parser.SetTokensToParser(_tokenRepository);
 
             // 3. Parse AST
             var ast = _parser.Parse();
