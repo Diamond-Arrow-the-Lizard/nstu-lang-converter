@@ -73,7 +73,6 @@ public partial class App : Application
     private static ServiceCollection ProvideServices()
     {
         var services = new ServiceCollection();
-        services.AddSingleton<MainWindowViewModel>();
 
         services.AddSingleton<IEnumerable<ITextToTokenHandler>>(sp =>
         [
@@ -117,6 +116,10 @@ public partial class App : Application
         services.AddSingleton<IAstVisitor, CSharpCodeGeneratorVisitor>();
 
 
+        services.AddSingleton<MainWindow>();
+        services.AddSingleton<MainWindowViewModel>();
+        services.AddSingleton<PseudocodeEditorView>();
+        services.AddSingleton<PseudocodeEditorViewModel>();
         return services;
     }
 }

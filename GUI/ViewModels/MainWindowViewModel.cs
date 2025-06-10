@@ -1,6 +1,6 @@
 ﻿namespace GUI.ViewModels;
 
-public partial class MainWindowViewModel : ViewModelBase
+public partial class MainWindowViewModel(PseudocodeEditorViewModel pseudocodeEditorViewModel) : ViewModelBase
 {
-    public string Greeting { get; } = "Welcome to Avalonia!";
+    public PseudocodeEditorViewModel PseudocodeEditorViewModel { get; } = pseudocodeEditorViewModel;
 }
