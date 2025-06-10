@@ -1,5 +1,6 @@
 using Core.Parser.AST.Nodes;
 using Core.Parser.Interfaces.Models;
+using Core.Parser.Interfaces.Repositories;
 
 namespace Core.Parser.Interfaces.AST;
 
@@ -9,14 +10,19 @@ namespace Core.Parser.Interfaces.AST;
 public interface IParser
 {
     /// <summary>
-    /// List of pseudolanguage tokens
-    /// </summary>
-    /// <value>IToken</value>
-    List<IToken> Tokens { get; set; }
-
-    /// <summary>
     /// Parses the token stream and constructs the Abstract Syntax Tree.
     /// </summary>
     /// <returns>The root node of the constructed AST, which is a ProgramNode.</returns>
     ProgramNode Parse();
+
+    /// <summary>
+    /// Clears the parser of all information
+    /// </summary>
+    void ClearParser();
+
+    /// <summary>
+    /// Sets the tokens in the parser from the repository
+    /// </summary>
+    /// <param name="tokenRepository"></param>
+    void SetTokensToParser(ITokenRepository tokenRepository);
 }

@@ -333,4 +333,9 @@ public class CSharpCodeGeneratorVisitor : IAstVisitor
     {
         throw new NotImplementedException($"Visit method not implemented for node type: {node.GetType().Name}");
     }
+
+    public void ClearGeneratedString()
+    {
+        _stringBuilder.Clear();
+    }
 }

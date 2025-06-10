@@ -34,5 +34,10 @@ public interface IAstVisitor
     /// Gets the generated code.
     /// </summary>
     /// <returns>A string containing the code.</returns>
-    public string GetGeneratedCode();
+    string GetGeneratedCode();
+
+    /// <summary>
+    /// Clears the string of generated code
+    /// </summary>
+    void ClearGeneratedString();
 }
