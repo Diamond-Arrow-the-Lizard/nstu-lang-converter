@@ -4,16 +4,36 @@
         xmlns:views="clr-namespace:GUI.Views"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="700"
         x:Class="GUI.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
-        Title="Converter">
-
-    <Design.DataContext>
+        Title="Converter"
+        WindowState="Maximized"> <Design.DataContext>
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <ContentControl Content="{Binding PseudocodeEditorViewModel}"/>
+    <Grid RowDefinitions="Auto, *, Auto">
+        <Menu Grid.Row="0" x:Name="MainMenu">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Save Code"/>
+                <MenuItem Header="_New"/>
+            </MenuItem>
+            <MenuItem Header="_Help">
+                <MenuItem Header="_Documentation"/>
+                <MenuItem Header="_About Program"/>
+            </MenuItem>
+        </Menu>
 
+
+        <Grid Grid.Row="1" ColumnDefinitions="*, Auto, *" Margin="10">
+            <views:PseudocodeEditorView Grid.Column="0" DataContext="{Binding PseudocodeEditorViewModel}" Margin="0,0,5,0"/>
+
+            <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="5">
+                <Button Content="Convert to C#" Command="{Binding ConvertPseudocodeToCSharpCommand}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <views:CSharpCodeOutputView Grid.Column="2" DataContext="{Binding CSharpCodeOutputViewModel}" Margin="5,0,0,0"/>
+        </Grid>
+    </Grid>
 </Window>

@@ -49,4 +49,9 @@ public class TokenRepository(ITokenService tokenService) : ITokenRepository
         _tokens.Add(_tokenService.CreateToken(tokenType, representation));
     }
 
+    public void ClearRepository()
+    {
+        _tokens.Clear();
+    }
+
 }

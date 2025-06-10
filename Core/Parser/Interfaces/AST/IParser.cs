@@ -1,4 +1,5 @@
-using Core.Parser.AST.Nodes; 
+using Core.Parser.AST.Nodes;
+using Core.Parser.Interfaces.Models;
 
 namespace Core.Parser.Interfaces.AST;
 
@@ -7,6 +8,12 @@ namespace Core.Parser.Interfaces.AST;
 /// </summary>
 public interface IParser
 {
+    /// <summary>
+    /// List of pseudolanguage tokens
+    /// </summary>
+    /// <value>IToken</value>
+    List<IToken> Tokens { get; set; }
+
     /// <summary>
     /// Parses the token stream and constructs the Abstract Syntax Tree.
     /// </summary>

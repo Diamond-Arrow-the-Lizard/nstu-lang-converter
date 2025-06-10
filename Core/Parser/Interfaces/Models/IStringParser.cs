@@ -18,4 +18,15 @@ public interface IStringParser
     /// Creates tokenized expression
     /// </summary>
     void MakeTokenizedExpression();
+
+    /// <summary>
+    /// Get the tokens repository from the parser explicitly
+    /// </summary>
+    /// <returns>Token Repository</returns>
+    ITokenRepository GetTokenRepository();
+
+    /// <summary>
+    /// Clears the repository from the parser
+    /// </summary>
+    void ClearRepository();
 }

@@ -1,0 +1,29 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:GUI.ViewModels"
+             mc:Ignorable="d"
+             x:Class="GUI.Views.CSharpCodeOutputView"
+             x:DataType="vm:CSharpCodeOutputViewModel"
+             d:DesignWidth="400" d:DesignHeight="600">
+    <Design.DataContext>
+        <vm:CSharpCodeOutputViewModel/>
+    </Design.DataContext>
+    <Grid RowDefinitions="*, Auto">
+        <TextBox Grid.Row="0"
+                 Text="{Binding GeneratedCSharpCode}"
+                 IsReadOnly="True"
+                 AcceptsReturn="True"
+                 AcceptsTab="True"
+                 TextWrapping="Wrap"
+                 VerticalAlignment="Stretch"
+                 HorizontalAlignment="Stretch"
+                 Watermark="Generated C# code will appear here..."/>
+        <TextBlock Grid.Row="1"
+                   Text="{Binding ErrorMessage}"
+                   Foreground="Red"
+                   Margin="0,5,0,0"
+                   TextWrapping="Wrap"/>
+    </Grid>
+</UserControl>

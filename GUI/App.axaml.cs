@@ -1,3 +1,4 @@
+// File: App.axaml.cs
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core;
@@ -29,18 +30,22 @@ using Core.Parser.Handlers.TextToTokenHandlers.KeywordTextToTokenHandlers.Statem
 
 namespace GUI;
 
+/// <summary>
+/// Represents the main application class, handling application startup and service registration.
+/// </summary>
 public partial class App : Application
 {
+    /// <inheritdoc/>
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
     }
 
+    /// <inheritdoc/>
     public override void OnFrameworkInitializationCompleted()
-    {        
+    {
         var collection = new ServiceCollection();
         collection = ProvideServices();
-
         var services = collection.BuildServiceProvider();
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
@@ -56,7 +61,6 @@ public partial class App : Application
 
         base.OnFrameworkInitializationCompleted();
     }
-
     private void DisableAvaloniaDataAnnotationValidation()
     {
         // Get an array of plugins to remove
@@ -70,6 +74,12 @@ public partial class App : Application
         }
     }
 
+
+
+    /// <summary>
+    /// Provides the application's services for Dependency Injection.
+    /// </summary>
+    /// <returns>A ServiceCollection containing the configured services.</returns>
     private static ServiceCollection ProvideServices()
     {
         var services = new ServiceCollection();
@@ -113,13 +123,16 @@ public partial class App : Application
         services.AddSingleton<ITokenService, TokenService>();
         services.AddSingleton<IStringParser, StringParser>();
         services.AddSingleton<IParser, Parser>();
-        services.AddSingleton<IAstVisitor, CSharpCodeGeneratorVisitor>();
 
+        services.AddSingleton<IAstVisitor, CSharpCodeGeneratorVisitor>();
 
         services.AddSingleton<MainWindow>();
         services.AddSingleton<MainWindowViewModel>();
         services.AddSingleton<PseudocodeEditorView>();
         services.AddSingleton<PseudocodeEditorViewModel>();
+        services.AddSingleton<CSharpCodeOutputView>();
+        services.AddSingleton<CSharpCodeOutputViewModel>();
+
         return services;
     }
 }

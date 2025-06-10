@@ -89,4 +89,8 @@ public class StringParser(ITokenRepository tokenRepository, IEnumerable<ITextToT
             }
         }
     }
+
+    public ITokenRepository GetTokenRepository() => _tokenRepository;
+
+    public void ClearRepository() => _tokenRepository.ClearRepository();
 }

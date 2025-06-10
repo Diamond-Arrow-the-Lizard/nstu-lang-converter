@@ -53,4 +53,9 @@ public interface ITokenRepository
     /// <param name="newToken"> Token to add </param>
     void AddToken(IToken newToken);
 
+    /// <summary>
+    /// Clears the repository
+    /// </summary>
+    void ClearRepository();
+
 }
