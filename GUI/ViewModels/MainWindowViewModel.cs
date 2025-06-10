@@ -89,12 +89,11 @@ public partial class MainWindowViewModel(
             CSharpCodeOutputViewModel.ErrorMessage = $"Syntax Error: {ex.Message}";
             CSharpCodeOutputViewModel.GeneratedCSharpCode = string.Empty;
         }
-        /*
         catch (Exception ex)
         {
             CSharpCodeOutputViewModel.ErrorMessage = $"An unexpected error occurred: {ex.Message}";
             CSharpCodeOutputViewModel.GeneratedCSharpCode = string.Empty;
         }
-        */
+        
     }
 }
