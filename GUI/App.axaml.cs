@@ -126,13 +126,15 @@ public partial class App : Application
 
         services.AddSingleton<IAstVisitor, CSharpCodeGeneratorVisitor>();
 
-        services.AddSingleton<MainWindow>();
-        services.AddSingleton<MainWindowViewModel>();
         services.AddSingleton<PseudocodeEditorView>();
         services.AddSingleton<PseudocodeEditorViewModel>();
         services.AddSingleton<CSharpCodeOutputView>();
         services.AddSingleton<CSharpCodeOutputViewModel>();
+        services.AddSingleton<SaveCodeView>();
+        services.AddSingleton<SaveCodeViewModel>();
 
+        services.AddSingleton<MainWindow>();
+        services.AddSingleton<MainWindowViewModel>();
         return services;
     }
 }

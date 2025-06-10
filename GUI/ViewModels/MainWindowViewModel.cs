@@ -27,6 +27,7 @@ namespace GUI.ViewModels;
 public partial class MainWindowViewModel(
     PseudocodeEditorViewModel pseudocodeEditorViewModel,
     CSharpCodeOutputViewModel cSharpCodeOutputViewModel,
+    SaveCodeViewModel saveCodeViewModel,
     IStringParser stringParser,
     IParser parser,
     IAstVisitor cSharpCodeGenerator,
@@ -46,6 +47,12 @@ public partial class MainWindowViewModel(
     /// Gets the ViewModel for the C# code output section of the UI.
     /// </summary>
     public CSharpCodeOutputViewModel CSharpCodeOutputViewModel { get; } = cSharpCodeOutputViewModel;
+
+    /// <summary>
+    /// Gets the VeiwModel for saving code
+    /// </summary>
+    public SaveCodeViewModel SaveCodeViewModel { get; } = saveCodeViewModel;
+
 
     /// <summary>
     /// Command to convert the pseudocode text into C# code.

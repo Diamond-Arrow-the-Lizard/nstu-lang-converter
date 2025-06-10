@@ -16,7 +16,7 @@
     <Grid RowDefinitions="Auto, *, Auto">
         <Menu Grid.Row="0" x:Name="MainMenu">
             <MenuItem Header="_File">
-                <MenuItem Header="_Save Code"/>
+                <MenuItem Header="_Save Code" Command="{Binding SaveCodeViewModel.SaveCodeCommand}"/>
                 <MenuItem Header="_New"/>
             </MenuItem>
             <MenuItem Header="_Help">
@@ -31,6 +31,7 @@
 
             <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="5">
                 <Button Content="Convert to C#" Command="{Binding ConvertPseudocodeToCSharpCommand}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <views:SaveCodeView DataContext="{Binding SaveCodeViewModel}"/>
             </StackPanel>
 
             <views:CSharpCodeOutputView Grid.Column="2" DataContext="{Binding CSharpCodeOutputViewModel}" Margin="5,0,0,0"/>
