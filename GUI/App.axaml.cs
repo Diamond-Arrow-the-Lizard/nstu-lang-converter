@@ -6,6 +6,26 @@ using System.Linq;
 using Avalonia.Markup.Xaml;
 using GUI.ViewModels;
 using GUI.Views;
+using Microsoft.Extensions.DependencyInjection;
+using Core.Parser.Interfaces.AST;
+using Core.Parser.CodeGenerator;
+using Core.Parser.Interfaces.Models;
+using Core.Parser.Models;
+using Core.Parser.AST.ASTParser;
+using Core.Parser.Interfaces.Repositories;
+using Core.Parser.Repositories;
+using Core.Parser.Interfaces.Services;
+using Core.Parser.Services;
+using System.Collections.Generic;
+using Core.Parser.Interfaces.Handlers;
+using Core.Parser.Handlers.TextToTokenHandlers;
+using Core.Parser.Handlers.TextToTokenHandlers.VariableTypeTextToTokenHandlers;
+using Core.Parser.Handlers.TextToTokenHandlers.KeywordTextToTokenHandlers.VariableTypeNameTextToTokenHandlers;
+using Core.Parser.Handlers.TextToTokenHandlers.OperationTextToTokenHandlers;
+using Core.Parser.Handlers.TextToTokenHandlers.KeywordTextToTokenHandlers;
+using Core.Parser.Handlers.TextToTokenHandlers.KeywordTextToTokenHandlers.ControlFlowHandlers.IfElseHandlers;
+using Core.Parser.Handlers.TextToTokenHandlers.KeywordTextToTokenHandlers.ControlFlowHandlers.LoopHandlers;
+using Core.Parser.Handlers.TextToTokenHandlers.KeywordTextToTokenHandlers.StatementHandlers.ReadWriteHandlers;
 
 namespace GUI;
 
@@ -17,7 +37,12 @@ public partial class App : Application
     }
 
     public override void OnFrameworkInitializationCompleted()
-    {
+    {        
+        var collection = new ServiceCollection();
+        collection = ProvideServices();
+
+        var services = collection.BuildServiceProvider();
+
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             // Avoid duplicate validations from both Avalonia and the CommunityToolkit. 
@@ -25,7 +50,7 @@ public partial class App : Application
             DisableAvaloniaDataAnnotationValidation();
             desktop.MainWindow = new MainWindow
             {
-                DataContext = new MainWindowViewModel(),
+                DataContext = services.GetRequiredService<MainWindowViewModel>(),
             };
         }
 
@@ -43,5 +68,55 @@ public partial class App : Application
         {
             BindingPlugins.DataValidators.Remove(plugin);
         }
+    }
+
+    private static ServiceCollection ProvideServices()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton<MainWindowViewModel>();
+
+        services.AddSingleton<IEnumerable<ITextToTokenHandler>>(sp =>
+        [
+            new ProgramBeginTextToTokenHandler(),
+            new ProgramEndTextToTokenHandler(),
+
+            new IntegerTextToTokenHandler(),
+            new StringTextToTokenHandler(),
+            new DoubleTextToTokenHandler(),
+
+            new DoubleTypeKeywordTextToTokenHandler(),
+            new StringTypeKeywordTextToTokenHandler(),
+            new IntegerTypeKeywordTextToTokenHandler(),
+
+            new AddOperationTextToTokenHandler(),
+            new AssignOperationTextToTokenHandler(),
+            new DecrementOperationTextToTokenHandler(),
+            new DivideOperationTextToTokenHandler(),
+            new EqualsOperationTextToTokenHandler(),
+            new ReturnKeywordTextToTokenHandler(),
+            new MultiplyOperationTextToTokenHandler(),
+
+            new ControlBeginKeywordTextToTokenHandler(),
+            new ControlEndKeywordTextToTokenHandler(),
+            new IfKeywordTextToTokenHandler(),
+            new ElseKeywordTextToTokenHandler(),
+
+            new LoopBeginKeywordTextToTokenHandler(),
+            new LoopTimesKeywordTextToTokenHandler(),
+            new LoopEndKeywordTextToTokenHandler(),
+
+            new ReadKeywordTextToTokenHandler(),
+            new WriteKeywordTextToTokenHandler(),
+            new SemicolonTextToTokenHandler(),
+        ]);
+
+        services.AddSingleton<ITokenRepository, TokenRepository>();
+        services.AddSingleton<ITokenService, TokenService>();
+        services.AddSingleton<IStringParser, StringParser>();
+        services.AddSingleton<IParser, Parser>();
+        services.AddSingleton<IAstVisitor, CSharpCodeGeneratorVisitor>();
+
+
+        return services;
     }
 }
