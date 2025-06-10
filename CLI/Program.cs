@@ -18,6 +18,7 @@ using Core.Parser.AST.ASTParser;
 using Core.Parser.AST.Nodes;
 using Core.Parser.Interfaces.AST;
 using Core.Parser.CodeGenerator;
+using Core.CodeSaver;
 
 namespace CLI;
 
@@ -147,6 +148,16 @@ public static class CLI
             string generatedCSharpCode = cSharpGenerator.GetGeneratedCode();
             Console.WriteLine(generatedCSharpCode);
             Console.WriteLine("---------------------------------\n");
+
+            bool saveSuccess = CodeSaver.SaveGeneratedCode(generatedCSharpCode, "Program.cs");
+            if (saveSuccess)
+            {
+                Console.WriteLine("Generated C# code saved to file successfully.");
+            }
+            else
+            {
+                Console.WriteLine("Failed to save generated C# code to file.");
+            }
         }
         
         catch (SyntaxException ex)
