@@ -9,7 +9,9 @@
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
         Title="Converter"
-        WindowState="Maximized"> <Design.DataContext>
+        WindowState="Maximized"> 
+
+    <Design.DataContext>
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
@@ -17,7 +19,7 @@
         <Menu Grid.Row="0" x:Name="MainMenu">
             <MenuItem Header="_File">
                 <MenuItem Header="_Save Code" Command="{Binding SaveCodeViewModel.SaveCodeCommand}"/>
-                <MenuItem Header="_New"/>
+                <MenuItem Header="_Clear Pseudocode" Command="{Binding PseudocodeEditorViewModel.ClearPseudocodeCommand}"/>
             </MenuItem>
             <MenuItem Header="_Help">
                 <MenuItem Header="_Documentation"/>

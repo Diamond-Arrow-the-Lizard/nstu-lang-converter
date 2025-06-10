@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace GUI.ViewModels
 {
@@ -6,8 +7,11 @@ namespace GUI.ViewModels
     {
         [ObservableProperty] private string _pseudocodeText = string.Empty;
 
-        public PseudocodeEditorViewModel()
+        [RelayCommand]
+        public void ClearPseudocode()
         {
+            PseudocodeText = string.Empty; 
         }
+
     }
 }
