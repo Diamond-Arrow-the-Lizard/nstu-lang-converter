@@ -9,6 +9,9 @@ using System;
 using Core.Parser.Interfaces.Repositories;
 using System.Linq;
 using Core.Parser.Repositories;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Controls;
+using Avalonia.Threading;
 
 namespace GUI.ViewModels;
 
@@ -28,6 +31,7 @@ public partial class MainWindowViewModel(
     PseudocodeEditorViewModel pseudocodeEditorViewModel,
     CSharpCodeOutputViewModel cSharpCodeOutputViewModel,
     SaveCodeViewModel saveCodeViewModel,
+    DocumentationViewModel documentationViewModel,
     IStringParser stringParser,
     IParser parser,
     IAstVisitor cSharpCodeGenerator,
@@ -53,6 +57,25 @@ public partial class MainWindowViewModel(
     /// </summary>
     public SaveCodeViewModel SaveCodeViewModel { get; } = saveCodeViewModel;
 
+    public DocumentationViewModel _documentationViewModel { get; } = documentationViewModel;
+
+
+    [RelayCommand]
+    private void ShowDocumentation() 
+    {
+        var documentationWindow = new Window
+        {
+            Title = "Документация по псевдокоду",
+            Content = new DocumentationView { DataContext = _documentationViewModel },
+            Width = 800,
+            Height = 600,
+            CanResize = true,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner
+        };
+
+
+        documentationWindow.Show();
+    }
 
     /// <summary>
     /// Command to convert the pseudocode text into C# code.
@@ -88,7 +111,7 @@ public partial class MainWindowViewModel(
             var ast = _parser.Parse();
 
             // 4. Generate C# code
-            ast.Accept(_cSharpCodeGenerator); 
+            ast.Accept(_cSharpCodeGenerator);
             CSharpCodeOutputViewModel.GeneratedCSharpCode = _cSharpCodeGenerator.GetGeneratedCode();
         }
         catch (SyntaxException ex)
@@ -101,6 +124,6 @@ public partial class MainWindowViewModel(
             CSharpCodeOutputViewModel.ErrorMessage = $"An unexpected error occurred: {ex.Message}";
             CSharpCodeOutputViewModel.GeneratedCSharpCode = string.Empty;
         }
-        
+
     }
 }

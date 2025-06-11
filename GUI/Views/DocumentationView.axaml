@@ -1,0 +1,53 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:GUI.ViewModels"
+             xmlns:models="clr-namespace:GUI.Models"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="GUI.Views.DocumentationView"
+             x:DataType="vm:DocumentationViewModel">
+    <Design.DataContext>
+        <vm:DocumentationViewModel/>
+    </Design.DataContext>
+
+    <Grid RowDefinitions="Auto,*">
+        <TextBlock Grid.Row="0" Text="Документация по псевдокоду"
+                   FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" Margin="10"/>
+
+        <Border Grid.Row="1" BorderBrush="LightGray" BorderThickness="1" CornerRadius="5" Margin="10">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <ItemsControl ItemsSource="{Binding DocumentationEntries}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="models:KeywordDocumentationEntry">
+                            <Border BorderBrush="LightGray" BorderThickness="0,0,0,1" Margin="0,0,0,5" Padding="5">
+                                <Grid ColumnDefinitions="Auto, 2*, 3*">
+                                    <TextBlock Grid.Column="0"
+                                               Text="{Binding Keyword}"
+                                               FontWeight="Bold"
+                                               Margin="0,0,10,0"
+                                               VerticalAlignment="Top" />
+                                    <TextBlock Grid.Column="1"
+                                               Text="{Binding Syntax}"
+                                               FontStyle="Italic"
+                                               Margin="0,0,10,0"
+                                               TextWrapping="Wrap"
+                                               VerticalAlignment="Top" />
+                                    <TextBlock Grid.Column="2"
+                                               Text="{Binding Explanation}"
+                                               TextWrapping="Wrap"
+                                               VerticalAlignment="Top" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </ScrollViewer>
+        </Border>
+    </Grid>
+</UserControl>

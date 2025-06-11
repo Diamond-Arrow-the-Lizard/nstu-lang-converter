@@ -1,4 +1,3 @@
-// File: App.axaml.cs
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core;
@@ -27,6 +26,7 @@ using Core.Parser.Handlers.TextToTokenHandlers.KeywordTextToTokenHandlers;
 using Core.Parser.Handlers.TextToTokenHandlers.KeywordTextToTokenHandlers.ControlFlowHandlers.IfElseHandlers;
 using Core.Parser.Handlers.TextToTokenHandlers.KeywordTextToTokenHandlers.ControlFlowHandlers.LoopHandlers;
 using Core.Parser.Handlers.TextToTokenHandlers.KeywordTextToTokenHandlers.StatementHandlers.ReadWriteHandlers;
+using GUI.Models;
 
 namespace GUI;
 
@@ -132,6 +132,8 @@ public partial class App : Application
         services.AddSingleton<CSharpCodeOutputViewModel>();
         services.AddSingleton<SaveCodeView>();
         services.AddSingleton<SaveCodeViewModel>();
+        services.AddSingleton<DocumentationView>();
+        services.AddSingleton<DocumentationViewModel>();
 
         services.AddSingleton<MainWindow>();
         services.AddSingleton<MainWindowViewModel>();
