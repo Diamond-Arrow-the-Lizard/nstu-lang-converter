@@ -10,6 +10,6 @@
     <vm:SaveCodeViewModel/>
   </Design.DataContext>
 
-  <Button Content="Save C# code" Command="{Binding SaveCodeCommand}" IsEnabled="True" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+  <Button Content="Сохранить код C#" Command="{Binding SaveCodeCommand}" IsEnabled="True" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
 </UserControl>

@@ -17,13 +17,13 @@
 
     <Grid RowDefinitions="Auto, *, Auto">
         <Menu Grid.Row="0" x:Name="MainMenu">
-            <MenuItem Header="_File">
-                <MenuItem Header="_Save Code" Command="{Binding SaveCodeViewModel.SaveCodeCommand}"/>
-                <MenuItem Header="_Clear Pseudocode" Command="{Binding PseudocodeEditorViewModel.ClearPseudocodeCommand}"/>
+            <MenuItem Header="_Файл">
+                <MenuItem Header="_Сохранить сгенерированный код" Command="{Binding SaveCodeViewModel.SaveCodeCommand}"/>
+                <MenuItem Header="_Очистить псевдокод" Command="{Binding PseudocodeEditorViewModel.ClearPseudocodeCommand}"/>
             </MenuItem>
-            <MenuItem Header="_Help">
-                <MenuItem Header="_Documentation" Command="{Binding ShowDocumentationCommand}"/>
-                <MenuItem Header="_About Program" Command="{Binding ShowAboutProgramCommand}"/>
+            <MenuItem Header="_Помощь">
+                <MenuItem Header="_Документация псевдокода" Command="{Binding ShowDocumentationCommand}"/>
+                <MenuItem Header="_О программе" Command="{Binding ShowAboutProgramCommand}"/>
             </MenuItem>
         </Menu>
 
@@ -32,7 +32,7 @@
             <views:PseudocodeEditorView Grid.Column="0" DataContext="{Binding PseudocodeEditorViewModel}" Margin="0,0,5,0"/>
 
             <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="5">
-                <Button Content="Convert to C#" Command="{Binding ConvertPseudocodeToCSharpCommand}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Button Content="Конвертировать в C#" Command="{Binding ConvertPseudocodeToCSharpCommand}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 <views:SaveCodeView DataContext="{Binding SaveCodeViewModel}"/>
             </StackPanel>
 
