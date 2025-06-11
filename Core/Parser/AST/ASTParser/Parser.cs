@@ -122,9 +122,9 @@ public class Parser(ITokenRepository tokenRepository) : IParser
     /// <exception cref="SyntaxException">Thrown for unexpected token types.</exception>
     private IAstNode? ParseStatement()
     {
+
         IAstNode? statement;
 
-        // Try to parse different types of statements
         if (Match(TokenType.IntegerType) || Match(TokenType.DoubleType) || Match(TokenType.StringType))
         {
             statement = ParseVariableDeclaration();
@@ -140,6 +140,10 @@ public class Parser(ITokenRepository tokenRepository) : IParser
         else if (Match(TokenType.LoopBegin))
         {
             statement = ParseLoopStatement();
+        }
+        else if (Match(TokenType.While))
+        {
+            statement = ParseWhileLoopStatement();
         }
         else if (Match(TokenType.Write))
         {
@@ -158,9 +162,13 @@ public class Parser(ITokenRepository tokenRepository) : IParser
             throw new SyntaxException($"Unexpected token type {CurrentToken.TokenType} at position {_position}. Expected a statement start.");
         }
 
-        if (statement is not IfElseControlFlowNode && statement is not LoopControlFlowNode)
+        if (statement is not IfElseControlFlowNode 
+            && statement is not LoopControlFlowNode
+            && statement is not WhileLoopControlFlowNode
+            && statement is not DoWhileLoopControlFlowNode
+            && statement is not ProgramNode)
         {
-            Expect(TokenType.Semicolon); // Expect ';'
+            Expect(TokenType.Semicolon); 
         }
 
         return statement;
@@ -238,7 +246,7 @@ public class Parser(ITokenRepository tokenRepository) : IParser
     {
         Expect(TokenType.If); // Consume 'если'
 
-        IAstNode condition = ParseExpression(); 
+        IAstNode condition = ParseExpression();
 
         Expect(TokenType.ControlBegin); // Expect 'то'
 
@@ -272,30 +280,34 @@ public class Parser(ITokenRepository tokenRepository) : IParser
     }
 
     /// <summary>
-    /// Parses a loop control flow statement.
-    /// Example: "нц 5 раз <statements> кц".
+    /// Parses loop && do-while control flow statements.
+    /// Example: "нц 5 раз <statements> кц"; "нц <statements> пока <expression> кц"
     /// </summary>
-    /// <returns>A LoopControlFlowNode.</returns>
-    private LoopControlFlowNode ParseLoopStatement()
+    /// <returns>A LoopControlFlowNode/DoWhileLoopControlFlowNode.</returns>
+    private IAstNode ParseLoopStatement()
     {
-        Expect(TokenType.LoopBegin); // Consume 'нц'
+        Expect(TokenType.LoopBegin); 
 
-        IAstNode loopCountExpression = ParsePrimaryExpression(); // Expect an integer literal or variable for loop count
+        int initialPosition = _position;
 
-        Expect(TokenType.LoopTimes); // Expect 'раз'
-
-        List<IAstNode> body = new();
-        while (CurrentToken.TokenType != TokenType.LoopEnd && CurrentToken.TokenType != TokenType.Eof)
+        try
         {
-            IAstNode? statement = ParseStatement();
-            if (statement != null)
-            {
-                body.Add(statement);
-            }
+            IAstNode loopCount = ParseExpression(); 
+            Expect(TokenType.LoopTimes); 
+            List<IAstNode> body = ParseStatementsUntil(TokenType.LoopEnd); 
+            Expect(TokenType.LoopEnd); 
+            return new LoopControlFlowNode(loopCount, body);
         }
+        catch (SyntaxException) 
+        {
+            _position = initialPosition;
 
-        Expect(TokenType.LoopEnd); // Expect 'кц'
-        return new LoopControlFlowNode(loopCountExpression, body);
+            List<IAstNode> body = ParseStatementsUntil(TokenType.While); 
+            Expect(TokenType.While); 
+            IAstNode condition = ParseExpression(); 
+            Expect(TokenType.LoopEnd); 
+            return new DoWhileLoopControlFlowNode(condition, body);
+        }
     }
 
     /// <summary>
@@ -349,7 +361,7 @@ public class Parser(ITokenRepository tokenRepository) : IParser
     /// <returns>An IAstNode representing the assignment or the next level of expression.</returns>
     private IAstNode ParseAssignment()
     {
-        IAstNode left = ParseEquality(); // Start with equality/comparison expressions
+        IAstNode left = ParseComparison(); // Start with equality/comparison expressions
 
         if (Match(TokenType.Assign))
         {
@@ -367,14 +379,20 @@ public class Parser(ITokenRepository tokenRepository) : IParser
     }
 
     /// <summary>
-    /// Parses equality expressions (==).
+    /// Parses comparison expressions (== < > <= >=).
     /// </summary>
-    /// <returns>An IAstNode representing the equality expression or the next level.</returns>
-    private IAstNode ParseEquality()
+    /// <returns>An IAstNode representing the comparison expression or the next level.</returns>
+    private IAstNode ParseComparison()
     {
         IAstNode left = ParseAdditive(); // Start with additive expressions
 
-        while (Match(TokenType.Equals))
+        while (
+            Match(TokenType.Equals) || 
+            Match(TokenType.Less) ||
+            Match(TokenType.More) ||
+            Match(TokenType.LessEquals) ||
+            Match(TokenType.MoreEquals)
+            )
         {
             IToken operatorToken = Advance(); // Consume '=='
             IAstNode right = ParseAdditive(); // Right side is also additive
@@ -445,9 +463,9 @@ public class Parser(ITokenRepository tokenRepository) : IParser
         }
         else if (Match(TokenType.ControlBegin)) // Parenthesized expression
         {
-            Advance(); 
+            Advance();
             IAstNode expr = ParseExpression();
-            Expect(TokenType.ControlEnd); 
+            Expect(TokenType.ControlEnd);
             return expr;
         }
 
@@ -495,6 +513,45 @@ public class Parser(ITokenRepository tokenRepository) : IParser
         string stringValue = token.Representation.Trim('\"');
         return new StringLiteralNode(stringValue);
     }
+
+    /// <summary>
+    /// Parses a While loop.
+    /// </summary>
+    /// <returns>WhileLoopControlFlowNode</returns>
+    private WhileLoopControlFlowNode ParseWhileLoopStatement()
+    {
+        Expect(TokenType.While);
+        IAstNode condition = ParseExpression();
+        Expect(TokenType.LoopBegin);
+
+        List<IAstNode> body = ParseStatementsUntil(TokenType.LoopEnd);
+
+        Expect(TokenType.LoopEnd);
+        return new WhileLoopControlFlowNode(condition, body);
+    }
+
+
+    /// <summary>
+    /// Parses the statement until the stopToken is encountered
+    /// </summary>
+    /// <param name="stopToken">TokenType to stop by</param>
+    /// <returns>List of AST nodes representing operators</returns>
+    private List<IAstNode> ParseStatementsUntil(TokenType stopToken)
+    {
+        List<IAstNode> statements = [];
+        while (CurrentToken.TokenType != stopToken && CurrentToken.TokenType != TokenType.Eof)
+        {
+            if (_position >= _tokens.Count)
+            {
+                throw new SyntaxException($"ParseStatementUntil: Expected '{stopToken}' before the end.");
+            }
+            var statementToParse = ParseStatement();
+            ArgumentNullException.ThrowIfNull(statementToParse);
+            statements.Add(statementToParse);
+        }
+        return statements;
+    }
+
 }
 
 /// <summary>

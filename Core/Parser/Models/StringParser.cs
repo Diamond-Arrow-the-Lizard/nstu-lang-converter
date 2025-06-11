@@ -25,7 +25,7 @@ public class StringParser(ITokenRepository tokenRepository, IEnumerable<ITextToT
             // First, try to handle the token as a whole (e.g., keywords, literals, operators, SEMICOLON)
             bool handled = TryTokenize(token);
 
-            if (!handled) 
+            if (!handled)
             {
                 // This 'else' branch handles cases where a token might be a VariableName
                 // after special characters have been separated by the regex.
@@ -37,7 +37,7 @@ public class StringParser(ITokenRepository tokenRepository, IEnumerable<ITextToT
         }
         if (_tokenRepository.GetAllTokens().LastOrDefault()?.TokenType != TokenType.Eof)
         {
-            _tokenRepository.AddToken(TokenType.Eof, ""); 
+            _tokenRepository.AddToken(TokenType.Eof, "");
         }
     }
 
@@ -50,7 +50,7 @@ public class StringParser(ITokenRepository tokenRepository, IEnumerable<ITextToT
     {
         if (token == ";")
         {
-            _tokenRepository.AddToken(TokenType.Semicolon, token); 
+            _tokenRepository.AddToken(TokenType.Semicolon, token);
             return true;
         }
         foreach (var handler in _TextToTokenHandlers)
@@ -73,19 +73,19 @@ public class StringParser(ITokenRepository tokenRepository, IEnumerable<ITextToT
         // Regex to split the input string into meaningful tokens.
         // It prioritizes:
         // 1. Quoted strings (e.g., "Hello world")
-        // 2. Multi-character operators (e.g., "==")
+        // 2. Multi-character operators (e.g., "==", "<=", ">=") - crucial to place these before single-character ones
         // 3. Numbers (integers and doubles) using \b\d+(\.\d+)?\b for precise matching
         // 4. Word characters (for keywords and variable names) using \b\w+\b
-        // 5. Single-character operators and delimiters (e.g., +, -, *, /, =, ;, {, })
+        // 5. Single-character operators and delimiters (e.g., +, -, *, /, =, ;, {, }, <, >)
         // It specifically ignores whitespace.
-        var regex = new Regex(@"""[^""]*""|==|\b\d+(\.\d+)?\b|\b\w+\b|[+\-*/=;{}]");
-        
+        var regex = new Regex(@"""[^""]*""|==|<=|>=|\b\d+(\.\d+)?\b|\b\w+\b|[+\-*/=;{}<>]");
+
         foreach (Match match in regex.Matches(_text))
         {
             // Only yield non-empty, non-whitespace matches
             if (!string.IsNullOrWhiteSpace(match.Value) && !char.IsWhiteSpace(match.Value[0]))
             {
-                yield return match.Value; 
+                yield return match.Value;
             }
         }
     }

@@ -93,12 +93,12 @@ namespace GUI.ViewModels
             // Conditional Statements (If-Else)
             DocumentationEntries.Add(new KeywordDocumentationEntry(
                 "если ... то ... кесли",
-                "если (условие) то\n    <операторы>\nкесли",
+                "если <условие> то\n    <операторы>\nкесли",
                 "Выполняет блок кода, если условие истинно."
             ));
             DocumentationEntries.Add(new KeywordDocumentationEntry(
                 "если ... то ... иначе ... кесли",
-                "если (условие) то\n    <операторы1>\nиначе\n    <операторы2>\nкесли",
+                "если <условие> то\n    <операторы1>\nиначе\n    <операторы2>\nкесли",
                 "Выполняет один блок кода, если условие истинно, и другой, если ложно."
             ));
 
@@ -107,6 +107,18 @@ namespace GUI.ViewModels
                 "нц ... раз ... кц",
                 "нц <число> раз\n    <операторы>\nкц",
                 "Выполняет цикл указанное количество раз."
+            ));
+
+            DocumentationEntries.Add(new KeywordDocumentationEntry(
+                "пока ... нц ... кц",
+                "пока <условие> нц\n    <операторы>\nкц",
+                "Выполняет цикл, пока условие не будет ложным (предусловие)."
+            ));
+
+            DocumentationEntries.Add(new KeywordDocumentationEntry(
+                "нц ... пока кц",
+                "нц\n <операторы>\nпока <условие> кц",
+                "Выполняет цикл, пока условие не будет ложным (постусловие)."
             ));
 
             // Return Statement
@@ -124,7 +136,7 @@ namespace GUI.ViewModels
             ));
             DocumentationEntries.Add(new KeywordDocumentationEntry(
                 "прочитать",
-                "прочитать(x);",
+                "прочитать x;",
                 "Считывает ввод пользователя в переменную."
             ));
 

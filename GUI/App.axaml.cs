@@ -104,9 +104,14 @@ public partial class App : Application
             new EqualsOperationTextToTokenHandler(),
             new ReturnKeywordTextToTokenHandler(),
             new MultiplyOperationTextToTokenHandler(),
+            new MoreEqualsOperationTextToTokenHandler(),
+            new LessEqualsOperationTextToTokenHandler(),
+            new MoreOperationTextToTokenHandler(),
+            new LessOperationTextToTokenHandler(),
 
             new ControlBeginKeywordTextToTokenHandler(),
             new ControlEndKeywordTextToTokenHandler(),
+            new WhileTextToTokenHandler(),
             new IfKeywordTextToTokenHandler(),
             new ElseKeywordTextToTokenHandler(),
 

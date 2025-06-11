@@ -41,7 +41,11 @@ public class BinaryExpressionNode : IAstNode
             operatorType != TokenType.Multiply &&
             operatorType != TokenType.Divide &&
             operatorType != TokenType.Assign && // Assignment can also be treated as a binary operation for AST purposes
-            operatorType != TokenType.Equals)
+            operatorType != TokenType.Equals &&
+            operatorType != TokenType.Less &&
+            operatorType != TokenType.More &&
+            operatorType != TokenType.MoreEquals &&
+            operatorType != TokenType.LessEquals)
         {
             throw new ArgumentException($"Invalid token type for binary operator: {operatorType}.");
         }

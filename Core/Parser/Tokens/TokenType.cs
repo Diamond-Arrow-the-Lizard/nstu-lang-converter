@@ -27,6 +27,10 @@ public enum TokenType
     Divide, // /
     Assign, // =
     Equals, // ==
+    Less, // <
+    More, // >
+    LessEquals, // <=
+    MoreEquals, // >=
 
     If, // если
     ControlBegin, // то

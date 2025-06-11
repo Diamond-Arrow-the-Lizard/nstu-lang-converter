@@ -287,16 +287,50 @@ public class CSharpCodeGeneratorVisitor : IAstVisitor
         }
     }
 
-    // TODO
+    /// <summary>
+    /// Generates a While loop.
+    /// </summary>
+    /// <param name="node">The WhileLoopControlFlowNode to visit</param>
     public void Visit(WhileLoopControlFlowNode node)
     {
-        throw new NotImplementedException(nameof(node));
+        _stringBuilder.Append(string.Concat(Enumerable.Repeat(IndentUnit, _indentationLevel)));
+        _stringBuilder.Append("while (");
+        node.LoopExpression.Accept(this); 
+        _stringBuilder.AppendLine(")");
+        AppendLine("{"); 
+
+        _indentationLevel++; 
+        foreach (var statement in node.Body)
+        {
+            statement.Accept(this); 
+        }
+        _indentationLevel--; 
+
+        AppendLine("}"); 
     }
 
-    // TODO
+    /// <summary>
+    /// Generates a Do-While loop.
+    /// </summary>
+    /// <param name="node">The DoWhileLoopControlFlowNode to visit</param>
     public void Visit(DoWhileLoopControlFlowNode node)
     {
-        throw new NotImplementedException(nameof(node));
+        AppendLine("do");
+        AppendLine("{"); 
+
+        _indentationLevel++; 
+        foreach (var statement in node.Body)
+        {
+            statement.Accept(this); 
+        }
+        _indentationLevel--; 
+
+        AppendLine("}"); 
+
+        _stringBuilder.Append(string.Concat(Enumerable.Repeat(IndentUnit, _indentationLevel)));
+        _stringBuilder.Append("while (");
+        node.LoopExpression.Accept(this); 
+        _stringBuilder.AppendLine(");"); 
     }
 
     /// <summary>
@@ -332,6 +366,10 @@ public class CSharpCodeGeneratorVisitor : IAstVisitor
             TokenType.Divide => "/",
             TokenType.Assign => "=",
             TokenType.Equals => "==",
+            TokenType.Less => "<",
+            TokenType.More => ">",
+            TokenType.LessEquals => "<=",
+            TokenType.MoreEquals => ">=",
             _ => throw new ArgumentException($"Unsupported operator type: {tokenType}"),
         };
     }

@@ -19,6 +19,7 @@ using Core.Parser.AST.Nodes;
 using Core.Parser.Interfaces.AST;
 using Core.Parser.CodeGenerator;
 using Core.CodeSaver;
+using System.Diagnostics;
 
 namespace CLI;
 
@@ -48,9 +49,14 @@ public static class CLI
             new EqualsOperationTextToTokenHandler(),
             new ReturnKeywordTextToTokenHandler(),
             new MultiplyOperationTextToTokenHandler(),
+            new MoreEqualsOperationTextToTokenHandler(),
+            new LessEqualsOperationTextToTokenHandler(),
+            new MoreOperationTextToTokenHandler(),
+            new LessOperationTextToTokenHandler(),
 
             new ControlBeginKeywordTextToTokenHandler(),
             new ControlEndKeywordTextToTokenHandler(),
+            new WhileTextToTokenHandler(),
             new IfKeywordTextToTokenHandler(),
             new ElseKeywordTextToTokenHandler(),
 
@@ -104,13 +110,32 @@ public static class CLI
         написать ""Num1 не 11."";
     кесли
 
+    если Num1 <= Var то
+        написать ""Num1 меньше или равно Var"";
+    иначе
+        написать ""Num1 больше Var"";
+    кесли
+
     нц 2 раз
         написать ""Повтор внутри цикла!"";
         цел Counter = 1;
         Counter = Counter + 1;
     кц
 
-конец".Trim(); // Trim to remove any leading/trailing whitespace from the multi-line string itself.
+    цел x = 10;
+    пока x == 10 нц
+        написать ""X равно 10"";
+        x = 5;
+    кц
+
+    цел y = 0;
+    нц
+        написать ""Y равно"";
+        написать y;
+        y = y + 1;
+    пока y < 3 кц
+
+конец".Trim(); 
 
         Console.WriteLine("--- Text to parse ---");
         Console.WriteLine(textToParse);
@@ -144,7 +169,7 @@ public static class CLI
             Console.WriteLine("--------------------------\n");
             Console.WriteLine("--- C# Code Generation Result ---");
             var cSharpGenerator = serviceProvider.GetRequiredService<IAstVisitor>();
-            ast.Accept(cSharpGenerator); // Start the visit process
+            ast.Accept(cSharpGenerator); 
             string generatedCSharpCode = cSharpGenerator.GetGeneratedCode();
             Console.WriteLine(generatedCSharpCode);
             Console.WriteLine("---------------------------------\n");
