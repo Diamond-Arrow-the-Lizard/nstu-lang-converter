@@ -22,7 +22,10 @@
                 <MenuItem Header="_Очистить псевдокод" Command="{Binding PseudocodeEditorViewModel.ClearPseudocodeCommand}"/>
             </MenuItem>
             <MenuItem Header="_Помощь">
-                <MenuItem Header="_Документация псевдокода" Command="{Binding ShowDocumentationCommand}"/>
+                <MenuItem Header="_Документация псевдокода">
+                    <MenuItem Header="_Показать" Command="{Binding ShowDocumentationCommand}"/>
+                    <MenuItem Header="_В отдельном окне" Command="{Binding ShowDocumentationAsWindowCommand}"/>
+                </MenuItem>
                 <MenuItem Header="_О программе" Command="{Binding ShowAboutProgramCommand}"/>
             </MenuItem>
         </Menu>

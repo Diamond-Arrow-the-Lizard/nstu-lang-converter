@@ -78,16 +78,32 @@ public partial class MainWindowViewModel(
     }
 
     [RelayCommand]
+    private void ShowDocumentationAsWindow()
+    {
+        var documentationWindow = new Window
+        {
+            Title = "Документация по псевдокоду",
+            Content = new DocumentationView { DataContext = DocumentationViewModel },
+            Width = 800,
+            Height = 900,
+            CanResize = true,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner
+        };
+
+        documentationWindow.Show();
+    }
+
+    [RelayCommand]
     private void ShowAboutProgram()
     {
         var aboutWindow = new Window
         {
             Title = "О программе",
             Content = new AboutProgramView { DataContext = AboutProgramViewModel },
-            Width = 650, 
-            Height = 300, 
-            CanResize = false, 
-            WindowStartupLocation = WindowStartupLocation.CenterOwner 
+            Width = 650,
+            Height = 300,
+            CanResize = false,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner
         };
 
         if (App.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop && desktop.MainWindow != null)
