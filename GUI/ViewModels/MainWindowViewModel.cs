@@ -33,6 +33,7 @@ public partial class MainWindowViewModel(
     SaveCodeViewModel saveCodeViewModel,
     DocumentationViewModel documentationViewModel,
     AboutProgramViewModel aboutProgramViewModel,
+    ExampleCodeViewModel exampleCodeViewModel,
     IStringParser stringParser,
     IParser parser,
     IAstVisitor cSharpCodeGenerator,
@@ -44,13 +45,11 @@ public partial class MainWindowViewModel(
     private ITokenRepository _tokenRepository = new TokenRepository(tokenService);
 
     public PseudocodeEditorViewModel PseudocodeEditorViewModel { get; } = pseudocodeEditorViewModel;
-
     public CSharpCodeOutputViewModel CSharpCodeOutputViewModel { get; } = cSharpCodeOutputViewModel;
-
     public SaveCodeViewModel SaveCodeViewModel { get; } = saveCodeViewModel;
-
     public DocumentationViewModel DocumentationViewModel { get; } = documentationViewModel;
     public AboutProgramViewModel AboutProgramViewModel { get; } = aboutProgramViewModel;
+    public ExampleCodeViewModel ExampleCodeViewModel { get; } = exampleCodeViewModel;
 
 
     [RelayCommand]
@@ -114,6 +113,12 @@ public partial class MainWindowViewModel(
         {
             aboutWindow.Show();
         }
+    }
+
+    [RelayCommand]
+    private void PutExampleCode()
+    {
+        PseudocodeEditorViewModel.PseudocodeText = ExampleCodeViewModel.ExampleCode;
     }
 
 

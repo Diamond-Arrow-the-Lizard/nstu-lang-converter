@@ -20,6 +20,7 @@
             <MenuItem Header="_Файл">
                 <MenuItem Header="_Сохранить сгенерированный код" Command="{Binding SaveCodeViewModel.SaveCodeCommand}"/>
                 <MenuItem Header="_Очистить псевдокод" Command="{Binding PseudocodeEditorViewModel.ClearPseudocodeCommand}"/>
+                <MenuItem Header="_Вставить пример псевдокода" Command="{Binding PutExampleCodeCommand}"/>
             </MenuItem>
             <MenuItem Header="_Помощь">
                 <MenuItem Header="_Документация псевдокода">
