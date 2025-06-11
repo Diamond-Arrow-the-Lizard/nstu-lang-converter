@@ -23,7 +23,7 @@
             </MenuItem>
             <MenuItem Header="_Help">
                 <MenuItem Header="_Documentation" Command="{Binding ShowDocumentationCommand}"/>
-                <MenuItem Header="_About Program"/>
+                <MenuItem Header="_About Program" Command="{Binding ShowAboutProgramCommand}"/>
             </MenuItem>
         </Menu>
 

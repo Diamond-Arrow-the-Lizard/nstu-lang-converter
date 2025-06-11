@@ -1,0 +1,31 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:GUI.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="250"
+             x:Class="GUI.Views.AboutProgramView"
+             x:DataType="vm:AboutProgramViewModel">
+    <Design.DataContext>
+        <vm:AboutProgramViewModel/>
+    </Design.DataContext>
+
+    <StackPanel Spacing="10" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="20">
+        <TextBlock Text="{Binding Title}"
+                   FontSize="24" FontWeight="Bold" HorizontalAlignment="Center"
+                   Margin="0,0,0,10"/>
+
+        <TextBlock Text="Авторы:"
+                   FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+
+        <TextBlock Text="{Binding Author1}"
+                   FontSize="14" HorizontalAlignment="Center"/>
+
+        <TextBlock Text="{Binding Author2}"
+                   FontSize="14" HorizontalAlignment="Center"/>
+
+        <TextBlock Text="© 2025"
+                   FontSize="12" Foreground="Gray" HorizontalAlignment="Center"
+                   Margin="0,10,0,0"/>
+    </StackPanel>
+</UserControl>

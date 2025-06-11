@@ -134,6 +134,8 @@ public partial class App : Application
         services.AddSingleton<SaveCodeViewModel>();
         services.AddSingleton<DocumentationView>();
         services.AddSingleton<DocumentationViewModel>();
+        services.AddSingleton<AboutProgramView>();
+        services.AddSingleton<AboutProgramViewModel>();
 
         services.AddSingleton<MainWindow>();
         services.AddSingleton<MainWindowViewModel>();

@@ -32,6 +32,7 @@ public partial class MainWindowViewModel(
     CSharpCodeOutputViewModel cSharpCodeOutputViewModel,
     SaveCodeViewModel saveCodeViewModel,
     DocumentationViewModel documentationViewModel,
+    AboutProgramViewModel aboutProgramViewModel,
     IStringParser stringParser,
     IParser parser,
     IAstVisitor cSharpCodeGenerator,
@@ -42,40 +43,63 @@ public partial class MainWindowViewModel(
     private readonly IAstVisitor _cSharpCodeGenerator = cSharpCodeGenerator;
     private ITokenRepository _tokenRepository = new TokenRepository(tokenService);
 
-    /// <summary>
-    /// Gets the ViewModel for the pseudocode editor section of the UI.
-    /// </summary>
     public PseudocodeEditorViewModel PseudocodeEditorViewModel { get; } = pseudocodeEditorViewModel;
 
-    /// <summary>
-    /// Gets the ViewModel for the C# code output section of the UI.
-    /// </summary>
     public CSharpCodeOutputViewModel CSharpCodeOutputViewModel { get; } = cSharpCodeOutputViewModel;
 
-    /// <summary>
-    /// Gets the VeiwModel for saving code
-    /// </summary>
     public SaveCodeViewModel SaveCodeViewModel { get; } = saveCodeViewModel;
 
-    public DocumentationViewModel _documentationViewModel { get; } = documentationViewModel;
+    public DocumentationViewModel DocumentationViewModel { get; } = documentationViewModel;
+    public AboutProgramViewModel AboutProgramViewModel { get; } = aboutProgramViewModel;
 
 
     [RelayCommand]
-    private void ShowDocumentation() 
+    private void ShowDocumentation()
     {
         var documentationWindow = new Window
         {
             Title = "Документация по псевдокоду",
-            Content = new DocumentationView { DataContext = _documentationViewModel },
+            Content = new DocumentationView { DataContext = DocumentationViewModel },
             Width = 800,
-            Height = 600,
+            Height = 900,
             CanResize = true,
             WindowStartupLocation = WindowStartupLocation.CenterOwner
         };
 
+        if (App.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop && desktop.MainWindow != null)
+        {
+            documentationWindow.ShowDialog(desktop.MainWindow);
+        }
+        else
+        {
+            documentationWindow.Show();
+        }
 
-        documentationWindow.Show();
     }
+
+    [RelayCommand]
+    private void ShowAboutProgram()
+    {
+        var aboutWindow = new Window
+        {
+            Title = "О программе",
+            Content = new AboutProgramView { DataContext = AboutProgramViewModel },
+            Width = 650, 
+            Height = 300, 
+            CanResize = false, 
+            WindowStartupLocation = WindowStartupLocation.CenterOwner 
+        };
+
+        if (App.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop && desktop.MainWindow != null)
+        {
+            aboutWindow.ShowDialog(desktop.MainWindow);
+        }
+        else
+        {
+            aboutWindow.Show();
+        }
+    }
+
 
     /// <summary>
     /// Command to convert the pseudocode text into C# code.
