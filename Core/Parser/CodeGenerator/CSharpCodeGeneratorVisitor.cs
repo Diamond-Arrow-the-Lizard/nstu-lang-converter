@@ -287,6 +287,18 @@ public class CSharpCodeGeneratorVisitor : IAstVisitor
         }
     }
 
+    // TODO
+    public void Visit(WhileLoopControlFlowNode node)
+    {
+        throw new NotImplementedException(nameof(node));
+    }
+
+    // TODO
+    public void Visit(DoWhileLoopControlFlowNode node)
+    {
+        throw new NotImplementedException(nameof(node));
+    }
+
     /// <summary>
     /// Converts a TokenType (variable type) to its corresponding C# string representation.
     /// </summary>

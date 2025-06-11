@@ -29,6 +29,8 @@ public interface IAstVisitor
     void Visit(ReturnNode node);
     void Visit(LoopControlFlowNode node);
     void Visit(IfElseControlFlowNode node);
+    void Visit(WhileLoopControlFlowNode node);
+    void Visit(DoWhileLoopControlFlowNode node);
 
     /// <summary>
     /// Gets the generated code.

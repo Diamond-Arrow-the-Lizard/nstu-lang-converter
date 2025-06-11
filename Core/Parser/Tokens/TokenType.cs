@@ -36,6 +36,7 @@ public enum TokenType
     LoopBegin, // нц
     LoopTimes, // i раз
     LoopEnd, // кц
+    While,
 
     Return, // вернуть
 
