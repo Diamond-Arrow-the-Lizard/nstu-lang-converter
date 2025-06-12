@@ -8,6 +8,7 @@ using Core.Parser.AST.Nodes.ControlFlowNodes.LoopControlFlowNodes;
 using Core.Parser.AST.Nodes.ControlFlowNodes.IfElseControlFlowNodes;
 using Core.Parser.AST.Nodes.LiteralNodes;
 using Core.Parser.AST.Nodes.ExpressionNodes;
+using System.Globalization;
 
 namespace Core.Parser.AST.ASTParser;
 
@@ -495,7 +496,7 @@ public class Parser(ITokenRepository tokenRepository) : IParser
     private DoubleLiteralNode ParseDoubleLiteral()
     {
         IToken token = Expect(TokenType.Double);
-        if (double.TryParse(token.Representation, out double value))
+        if (double.TryParse(token.Representation, NumberStyles.Any, CultureInfo.InvariantCulture, out double value))
         {
             return new DoubleLiteralNode(value);
         }
