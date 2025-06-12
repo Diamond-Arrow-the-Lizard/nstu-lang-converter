@@ -2,21 +2,29 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="using:GUI.ViewModels"
+             xmlns:vm="clr-namespace:GUI.ViewModels"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="GUI.Views.PseudocodeEditorView"
              x:DataType="vm:PseudocodeEditorViewModel">
-  <Design.DataContext>
-    <vm:PseudocodeEditorViewModel/>
-  </Design.DataContext>
+    <Grid>
+        <TextBlock x:Name="HighlightedTextBlock"
+                   TextWrapping="Wrap"
+                   VerticalAlignment="Stretch"
+                   HorizontalAlignment="Stretch"
+                   Background="White"
+                   Padding="5"
+                   FontFamily="Consolas"
+                   FontSize="14"/>
 
-  <Grid>
-    <TextBox Text="{Binding PseudocodeText}"
-             AcceptsReturn="True"
-             AcceptsTab="True"
-             TextWrapping="Wrap"
-             VerticalAlignment="Stretch"
-             HorizontalAlignment="Stretch"
-             Watermark="Введите ваш псевдокод здесь..."/>
-  </Grid>
+        <TextBox x:Name="EditorTextBox" Text="{Binding PseudocodeText}"
+                 AcceptsReturn="True"
+                 VerticalAlignment="Stretch"
+                 HorizontalAlignment="Stretch"
+                 Background="Transparent"
+                 CaretBrush="Black"
+                 Foreground="Transparent" Padding="5"
+                 FontFamily="Consolas"
+                 FontSize="14"
+                 TextWrapping="Wrap"
+                 GotFocus="EditorTextBox_GotFocus"     LostFocus="EditorTextBox_LostFocus"/> </Grid>
 </UserControl>
