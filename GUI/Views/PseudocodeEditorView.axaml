@@ -11,20 +11,20 @@
                    TextWrapping="Wrap"
                    VerticalAlignment="Stretch"
                    HorizontalAlignment="Stretch"
-                   Background="White"
-                   Padding="5"
+                   Background="#1E1E1E" Padding="5" Foreground="Transparent"
                    FontFamily="Consolas"
                    FontSize="14"/>
 
-        <TextBox x:Name="EditorTextBox" Text="{Binding PseudocodeText}"
+        <TextBox x:Name="EditorTextBox"
+                 Text="{Binding PseudocodeText}"
                  AcceptsReturn="True"
                  VerticalAlignment="Stretch"
                  HorizontalAlignment="Stretch"
-                 Background="Transparent"
-                 CaretBrush="Black"
-                 Foreground="Transparent" Padding="5"
+                 Background="Transparent" CaretBrush="White" Foreground="Transparent" Padding="5"
                  FontFamily="Consolas"
                  FontSize="14"
                  TextWrapping="Wrap"
-                 GotFocus="EditorTextBox_GotFocus"     LostFocus="EditorTextBox_LostFocus"/> </Grid>
+                 GotFocus="EditorTextBox_GotFocus"
+                 LostFocus="EditorTextBox_LostFocus"/>
+    </Grid>
 </UserControl>

@@ -54,11 +54,11 @@ namespace GUI.ViewModels
                 var text = match.Value;
                 if (_keywords.Contains(text))
                 {
-                    inlines.Add(new Run(text) { Foreground = Brushes.Blue }); // Синий цвет для ключевых слов
+                    inlines.Add(new Run(text) { Foreground = Brushes.Blue }); 
                 }
                 else
                 {
-                    inlines.Add(new Run(text) { Foreground = Brushes.Black }); // Черный цвет для остального текста
+                    inlines.Add(new Run(text) { Foreground = Brushes.White}); 
                 }
             }
             HighlightedPseudocodeInlines = inlines;

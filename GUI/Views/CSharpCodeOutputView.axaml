@@ -19,7 +19,7 @@
                  TextWrapping="Wrap"
                  VerticalAlignment="Stretch"
                  HorizontalAlignment="Stretch"
-                 Watermark="Generated C# code will appear here..."/>
+                 Watermark="Здесь появится сгенерированный код C#..."/>
         <TextBlock Grid.Row="1"
                    Text="{Binding ErrorMessage}"
                    Foreground="Red"

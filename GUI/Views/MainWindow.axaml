@@ -23,8 +23,8 @@
                 <MenuItem Header="_Вставить пример псевдокода" Command="{Binding PutExampleCodeCommand}"/>
             </MenuItem>
             <MenuItem Header="_Помощь">
-                <MenuItem Header="_Документация псевдокода">
-                    <MenuItem Header="_Показать" Command="{Binding ShowDocumentationCommand}"/>
+                <MenuItem Header="_Показать Документацию псевдокода...">
+                    <MenuItem Header="_В диалоговом окне" Command="{Binding ShowDocumentationCommand}"/>
                     <MenuItem Header="_В отдельном окне" Command="{Binding ShowDocumentationAsWindowCommand}"/>
                 </MenuItem>
                 <MenuItem Header="_О программе" Command="{Binding ShowAboutProgramCommand}"/>
