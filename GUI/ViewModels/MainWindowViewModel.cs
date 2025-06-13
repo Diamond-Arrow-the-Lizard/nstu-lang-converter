@@ -162,7 +162,7 @@ public partial class MainWindowViewModel(
         catch (SyntaxException ex)
         {
             CSharpCodeOutputViewModel.ErrorMessage = $"Syntax Error: {ex.Message}";
-            CSharpCodeOutputViewModel.GeneratedCSharpCode = string.Empty;
+            CSharpCodeOutputViewModel.GeneratedCSharpCode = GetTokenParserResult();
         }
         catch (Exception ex)
         {
@@ -170,5 +170,22 @@ public partial class MainWindowViewModel(
             CSharpCodeOutputViewModel.GeneratedCSharpCode = string.Empty;
         }
 
+    }
+
+    /// <summary>
+    /// Gets the tokenization result
+    /// </summary>
+    /// <returns>string of tokenization result</returns>
+    private string GetTokenParserResult()
+    {
+        string parserResult = string.Empty;
+        var tokens = _stringParser.GetTokenRepository().GetAllTokens();
+        int i = 0;
+        foreach(var token in tokens)
+        {
+            parserResult += $"Position:{i}, Token type:{token.TokenType}, representation: '{token.Representation}'\n";
+            ++i;
+        }
+        return parserResult;
     }
 }
