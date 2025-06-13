@@ -73,7 +73,7 @@ public class CSharpCodeGeneratorVisitor : IAstVisitor
     public void Visit(ProgramNode node)
     {
         AppendLine("using System;");
-        AppendLine("using System.Linq;"); 
+        AppendLine("using System.Linq;");
         AppendLine();
         AppendLine("namespace GeneratedProgram;");
         AppendLine();
@@ -217,7 +217,7 @@ public class CSharpCodeGeneratorVisitor : IAstVisitor
     /// <param name="node">The ReturnNode to visit.</param>
     public void Visit(ReturnNode node)
     {
-        if (node.Expression!= null)
+        if (node.Expression != null)
         {
             _stringBuilder.Append(string.Concat(Enumerable.Repeat(IndentUnit, _indentationLevel)));
             _stringBuilder.Append("return ");
@@ -253,39 +253,51 @@ public class CSharpCodeGeneratorVisitor : IAstVisitor
     }
 
     /// <summary>
-    /// Visits an IfElseControlFlowNode and generates a C# if-else statement.
+    /// Visits an IfElseControlFlowNode and generates C# if-else if-else structure.
     /// </summary>
     /// <param name="node">The IfElseControlFlowNode to visit.</param>
     public void Visit(IfElseControlFlowNode node)
     {
-        _stringBuilder.Append(string.Concat(Enumerable.Repeat(IndentUnit, _indentationLevel)));
-        _stringBuilder.Append("if (");
-        node.Condition.Accept(this);
-        _stringBuilder.AppendLine(")");
+        // Initial if block
+        AppendLine($"if ({GetExpressionString(node.Condition)})"); // Corrected here
         AppendLine("{");
-        Indent();
-
+        _indentationLevel++;
         foreach (var statement in node.ThenBlock)
         {
             statement.Accept(this);
         }
-
-        Dedent();
+        _indentationLevel--;
         AppendLine("}");
 
-        if (node.ElseBlock != null && node.ElseBlock.Count != 0)
+        // Else If blocks
+        foreach (var (elseIfCondition, elseIfBlock) in node.ElseIfBlocks)
+        {
+            AppendLine($"else if ({GetExpressionString(elseIfCondition)})"); // Corrected here
+            AppendLine("{");
+            _indentationLevel++;
+            foreach (var statement in elseIfBlock)
+            {
+                statement.Accept(this);
+            }
+            _indentationLevel--;
+            AppendLine("}");
+        }
+
+        // Final Else block
+        if (node.ElseBlock != null && node.ElseBlock.Any())
         {
             AppendLine("else");
             AppendLine("{");
-            Indent();
+            _indentationLevel++;
             foreach (var statement in node.ElseBlock)
             {
                 statement.Accept(this);
             }
-            Dedent();
+            _indentationLevel--;
             AppendLine("}");
         }
     }
+
 
     /// <summary>
     /// Generates a While loop.
@@ -295,18 +307,18 @@ public class CSharpCodeGeneratorVisitor : IAstVisitor
     {
         _stringBuilder.Append(string.Concat(Enumerable.Repeat(IndentUnit, _indentationLevel)));
         _stringBuilder.Append("while (");
-        node.LoopExpression.Accept(this); 
+        node.LoopExpression.Accept(this);
         _stringBuilder.AppendLine(")");
-        AppendLine("{"); 
+        AppendLine("{");
 
-        _indentationLevel++; 
+        _indentationLevel++;
         foreach (var statement in node.Body)
         {
-            statement.Accept(this); 
+            statement.Accept(this);
         }
-        _indentationLevel--; 
+        _indentationLevel--;
 
-        AppendLine("}"); 
+        AppendLine("}");
     }
 
     /// <summary>
@@ -316,21 +328,21 @@ public class CSharpCodeGeneratorVisitor : IAstVisitor
     public void Visit(DoWhileLoopControlFlowNode node)
     {
         AppendLine("do");
-        AppendLine("{"); 
+        AppendLine("{");
 
-        _indentationLevel++; 
+        _indentationLevel++;
         foreach (var statement in node.Body)
         {
-            statement.Accept(this); 
+            statement.Accept(this);
         }
-        _indentationLevel--; 
+        _indentationLevel--;
 
-        AppendLine("}"); 
+        AppendLine("}");
 
         _stringBuilder.Append(string.Concat(Enumerable.Repeat(IndentUnit, _indentationLevel)));
         _stringBuilder.Append("while (");
-        node.LoopExpression.Accept(this); 
-        _stringBuilder.AppendLine(");"); 
+        node.LoopExpression.Accept(this);
+        _stringBuilder.AppendLine(");");
     }
 
     /// <summary>
@@ -388,4 +400,29 @@ public class CSharpCodeGeneratorVisitor : IAstVisitor
     {
         _stringBuilder.Clear();
     }
+
+    /// <summary>
+    /// Helper method to visit an expression and return its C# string representation.
+    /// This is a workaround because `Accept` is `void` and appends to the StringBuilder.
+    /// </summary>
+    /// <param name="expressionNode">The expression AST node.</param>
+    /// <returns>The C# string representation of the expression.</returns>
+    private string GetExpressionString(IAstNode expressionNode)
+    {
+        // Temporarily store the current StringBuilder state
+        var originalLength = _stringBuilder.Length;
+
+        // Visit the expression, which appends its representation to _stringBuilder
+        expressionNode.Accept(this);
+
+        // Extract the newly appended part
+        var expressionString = _stringBuilder.ToString(originalLength, _stringBuilder.Length - originalLength);
+
+        // Remove the appended part to restore the StringBuilder's state
+        _stringBuilder.Length = originalLength;
+
+        return expressionString;
+    }
+
+
 }

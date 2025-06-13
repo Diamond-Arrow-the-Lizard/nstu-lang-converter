@@ -33,9 +33,11 @@ public partial class ExampleCodeViewModel : ViewModelBase
     написать Var;
 
     если Num1 == 11 то
-        написать ""Num1 стало 11!"";
+        написать ""Num1 равно 11!"";
+    иначе если Num1 < 11 то
+        написать ""Num1 меньше 11."";
     иначе
-        написать ""Num1 не 11."";
+        написать ""Num1 больше 11."";
     кесли
 
     если Num1 <= Var то

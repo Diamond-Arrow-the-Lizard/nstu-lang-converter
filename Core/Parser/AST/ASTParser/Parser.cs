@@ -78,7 +78,7 @@ public class Parser(ITokenRepository tokenRepository) : IParser
             Advance();
             return token;
         }
-        throw new SyntaxException($"Expected {tokenType} but found {token.TokenType} at position {_position - 1}.");
+        throw new SyntaxException($"Expected {tokenType} but found {token.TokenType} at position {_position}.");
     }
 
     /// <summary>
@@ -123,6 +123,7 @@ public class Parser(ITokenRepository tokenRepository) : IParser
     /// <exception cref="SyntaxException">Thrown for unexpected token types.</exception>
     private IAstNode? ParseStatement()
     {
+        Console.WriteLine($"DEBUG: Entering ParseStatement at position {_position}, CurrentToken: {CurrentToken.TokenType}");
 
         IAstNode? statement;
 
@@ -169,9 +170,16 @@ public class Parser(ITokenRepository tokenRepository) : IParser
             && statement is not DoWhileLoopControlFlowNode
             && statement is not ProgramNode)
         {
+            Console.WriteLine($"DEBUG: Expecting Semicolon after statement at position {_position}, CurrentToken: {CurrentToken.TokenType}");
             Expect(TokenType.Semicolon); 
+            Console.WriteLine($"DEBUG: Semicolon consumed. Position: {_position}, CurrentToken: {CurrentToken.TokenType}");
+        }
+        else
+        {
+             Console.WriteLine($"DEBUG: Skipping Semicolon expectation for {statement.GetType().Name} at position {_position}, CurrentToken: {CurrentToken.TokenType}");
         }
 
+        Console.WriteLine($"DEBUG: Exiting ParseStatement at position {_position}, CurrentToken: {CurrentToken.TokenType}");
         return statement;
     }
 
@@ -240,44 +248,50 @@ public class Parser(ITokenRepository tokenRepository) : IParser
 
     /// <summary>
     /// Parses an if-else control flow statement.
-    /// Example: "если (условие) то <statements> иначе <statements> кесли".
+    /// Example: "если (условие) то <statements> иначе если (условие) то <statements> иначе <statements> кесли".
     /// </summary>
     /// <returns>An IfElseControlFlowNode.</returns>
     private IfElseControlFlowNode ParseIfElseStatement()
     {
+        Console.WriteLine($"DEBUG: Entering ParseIfElseStatement at position {_position}, CurrentToken: {CurrentToken.TokenType}");
+
         Expect(TokenType.If); // Consume 'если'
-
         IAstNode condition = ParseExpression();
-
         Expect(TokenType.ControlBegin); // Expect 'то'
 
-        List<IAstNode> thenBlock = new();
-        while (CurrentToken.TokenType != TokenType.Else && CurrentToken.TokenType != TokenType.ControlEnd && CurrentToken.TokenType != TokenType.Eof)
-        {
-            IAstNode? statement = ParseStatement();
-            if (statement != null)
-            {
-                thenBlock.Add(statement);
-            }
-        }
+        List<IAstNode> thenBlock = ParseStatementsUntil(TokenType.Else, TokenType.ControlEnd);
 
-        List<IAstNode>? elseBlock = null;
-        if (Match(TokenType.Else))
+        List<(IAstNode ElseIfCondition, List<IAstNode> ElseIfBlock)> elseIfBlocks = new();
+        List<IAstNode>? finalElseBlock = null;
+
+        while (Match(TokenType.Else))
         {
             Advance(); // Consume 'иначе'
-            elseBlock = new List<IAstNode>();
-            while (CurrentToken.TokenType != TokenType.ControlEnd && CurrentToken.TokenType != TokenType.Eof)
+            Console.WriteLine($"DEBUG: After consuming Else. Position: {_position}, CurrentToken: {CurrentToken.TokenType}");
+
+            if (Match(TokenType.If)) // This is an 'else if'
             {
-                IAstNode? statement = ParseStatement();
-                if (statement != null)
-                {
-                    elseBlock.Add(statement);
-                }
+                Advance(); // Consume 'если'
+                Console.WriteLine($"DEBUG: Handling Else If. Position: {_position}, CurrentToken: {CurrentToken.TokenType}");
+                IAstNode elseIfCondition = ParseExpression();
+                Expect(TokenType.ControlBegin); // Expect 'то' after else if condition
+                List<IAstNode> elseIfStatements = ParseStatementsUntil(TokenType.Else, TokenType.ControlEnd);
+                elseIfBlocks.Add((elseIfCondition, elseIfStatements));
+            }
+            else // This is a regular 'иначе' (the final else)
+            {
+                Console.WriteLine($"DEBUG: Handling regular Else block. Position: {_position}, CurrentToken: {CurrentToken.TokenType}");
+                finalElseBlock = ParseStatementsUntil(TokenType.ControlEnd);
+                break; // Exit loop after processing the final else block
             }
         }
 
-        Expect(TokenType.ControlEnd); // Expect 'кесли'
-        return new IfElseControlFlowNode(condition, thenBlock, elseBlock);
+        Console.WriteLine($"DEBUG: About to expect ControlEnd (кесли). Position: {_position}, CurrentToken: {CurrentToken.TokenType}");
+        Expect(TokenType.ControlEnd); // Expect the single 'кесли' for the entire chain.
+        Console.WriteLine($"DEBUG: After consuming ControlEnd (кесли). Position: {_position}, CurrentToken: {CurrentToken.TokenType}");
+
+        Console.WriteLine($"DEBUG: Exiting ParseIfElseStatement at position {_position}, CurrentToken: {CurrentToken.TokenType}");
+        return new IfElseControlFlowNode(condition, thenBlock, elseIfBlocks, finalElseBlock);
     }
 
     /// <summary>
@@ -287,16 +301,18 @@ public class Parser(ITokenRepository tokenRepository) : IParser
     /// <returns>A LoopControlFlowNode/DoWhileLoopControlFlowNode.</returns>
     private IAstNode ParseLoopStatement()
     {
-        Expect(TokenType.LoopBegin); 
+        Console.WriteLine($"DEBUG: Entering ParseLoopStatement at position {_position}, CurrentToken: {CurrentToken.TokenType}");
+        Expect(TokenType.LoopBegin);
 
         int initialPosition = _position;
 
         try
         {
             IAstNode loopCount = ParseExpression(); 
-            Expect(TokenType.LoopTimes); 
+            Expect(TokenType.LoopTimes);
             List<IAstNode> body = ParseStatementsUntil(TokenType.LoopEnd); 
-            Expect(TokenType.LoopEnd); 
+            Expect(TokenType.LoopEnd);
+            Console.WriteLine($"DEBUG: Exiting ParseLoopStatement (LoopControlFlowNode) at position {_position}, CurrentToken: {CurrentToken.TokenType}");
             return new LoopControlFlowNode(loopCount, body);
         }
         catch (SyntaxException) 
@@ -307,6 +323,7 @@ public class Parser(ITokenRepository tokenRepository) : IParser
             Expect(TokenType.While); 
             IAstNode condition = ParseExpression(); 
             Expect(TokenType.LoopEnd); 
+            Console.WriteLine($"DEBUG: Exiting ParseLoopStatement (DoWhileLoopControlFlowNode) at position {_position}, CurrentToken: {CurrentToken.TokenType}");
             return new DoWhileLoopControlFlowNode(condition, body);
         }
     }
@@ -462,11 +479,11 @@ public class Parser(ITokenRepository tokenRepository) : IParser
         {
             return ParseVariableReference();
         }
-        else if (Match(TokenType.ControlBegin)) // Parenthesized expression
+        else if (Match(TokenType.ControlBegin)) // Parenthesized expression - this should be TokenType.LeftParen, but using ControlBegin for now
         {
             Advance();
             IAstNode expr = ParseExpression();
-            Expect(TokenType.ControlEnd);
+            Expect(TokenType.ControlEnd); // This should be TokenType.RightParen
             return expr;
         }
 
@@ -521,6 +538,7 @@ public class Parser(ITokenRepository tokenRepository) : IParser
     /// <returns>WhileLoopControlFlowNode</returns>
     private WhileLoopControlFlowNode ParseWhileLoopStatement()
     {
+        Console.WriteLine($"DEBUG: Entering ParseWhileLoopStatement at position {_position}, CurrentToken: {CurrentToken.TokenType}");
         Expect(TokenType.While);
         IAstNode condition = ParseExpression();
         Expect(TokenType.LoopBegin);
@@ -528,6 +546,7 @@ public class Parser(ITokenRepository tokenRepository) : IParser
         List<IAstNode> body = ParseStatementsUntil(TokenType.LoopEnd);
 
         Expect(TokenType.LoopEnd);
+        Console.WriteLine($"DEBUG: Exiting ParseWhileLoopStatement at position {_position}, CurrentToken: {CurrentToken.TokenType}");
         return new WhileLoopControlFlowNode(condition, body);
     }
 
@@ -537,14 +556,14 @@ public class Parser(ITokenRepository tokenRepository) : IParser
     /// </summary>
     /// <param name="stopToken">TokenType to stop by</param>
     /// <returns>List of AST nodes representing operators</returns>
-    private List<IAstNode> ParseStatementsUntil(TokenType stopToken)
+    private List<IAstNode> ParseStatementsUntil(params TokenType[] stopTokens)
     {
         List<IAstNode> statements = [];
-        while (CurrentToken.TokenType != stopToken && CurrentToken.TokenType != TokenType.Eof)
+        while (!stopTokens.Contains(CurrentToken.TokenType) && CurrentToken.TokenType != TokenType.Eof)
         {
             if (_position >= _tokens.Count)
             {
-                throw new SyntaxException($"ParseStatementUntil: Expected '{stopToken}' before the end.");
+                throw new SyntaxException($"ParseStatementUntil: Expected one of '{string.Join(", ", stopTokens)}' before the end.");
             }
             var statementToParse = ParseStatement();
             ArgumentNullException.ThrowIfNull(statementToParse);
